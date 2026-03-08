@@ -33,6 +33,16 @@ public class Appointment {
         this.type = type;
         this.status = AppointmentStatus.AVAILABLE;
     }
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "dateTime=" + dateTime +
+                ", duration=" + duration +
+                ", participants=" + participants +
+                ", status=" + status +
+                ", type=" + type.getClass().getSimpleName() +
+                '}';
+    }
 
     public String getId() {
         return id;
@@ -88,4 +98,5 @@ public class Appointment {
     public void setType(AppointmentType type) {
         this.type = type;
     }
+    
 }
