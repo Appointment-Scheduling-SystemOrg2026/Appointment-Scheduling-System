@@ -2,6 +2,7 @@ package com.scheduling.domain.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 
 import com.scheduling.domain.type.AppointmentType;
 
@@ -98,5 +99,9 @@ public class Appointment {
     public void setType(AppointmentType type) {
         this.type = type;
     }
+	public BooleanSupplier isFuture() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

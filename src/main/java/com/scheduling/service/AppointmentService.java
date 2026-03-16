@@ -78,14 +78,29 @@ public class AppointmentService {
      * Cancels appointment.
      */
     public boolean cancelAppointment(Appointment appointment) {
-
-        if (!appointment.getDateTime()
-                .isAfter(java.time.LocalDateTime.now())) {
+        if (!appointment.getDateTime().isAfter(java.time.LocalDateTime.now())) {
             return false;
         }
 
-        repository.delete(appointment);
+        
+        appointment.cancel();
+        repository.deleteById(appointment.getId());
         return true;
     }
+
+	public Appointment findById(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean deleteAppointment(Appointment apt) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public List<Appointment> findAllAppointments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

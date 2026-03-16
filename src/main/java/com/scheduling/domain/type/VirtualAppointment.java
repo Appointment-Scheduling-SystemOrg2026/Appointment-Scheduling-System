@@ -1,17 +1,42 @@
 package com.scheduling.domain.type;
 
-import com.scheduling.domain.type.AppointmentType;
-import com.scheduling.domain.entity.Appointment;
-
-public class VirtualAppointment extends AppointmentType {
+/**
+ * Represents a virtual (remote/online) appointment.
+ *
+ * <p><b>User Story US5.2:</b> Virtual appointments have:</p>
+ * <ul>
+ *   <li>Standard duration (up to 45 minutes)</li>
+ *   <li>Conducted via video conferencing</li>
+ *   <li>Meeting link provided</li>
+ * </ul>
+ *
+ * @author Tasneem
+ * @version 1.0
+ */
+public class VirtualAppointment implements AppointmentType {
 
     @Override
-    public boolean isValid(Appointment appointment) {
-        return true; // no location limit
+    public String getDescription() {
+        return "Remote appointment via video conferencing";
     }
 
     @Override
-    public String getTypeName() {
-        return "VIRTUAL";
+    public int getMaxDuration() {
+        return 45;
     }
+
+    @Override
+    public int getMaxParticipants() {
+        return 5;
+    }
+
+    @Override
+    public boolean isVirtual() {
+        return true;
+    }
+
+	public void getTypeName() {
+		// TODO Auto-generated method stub
+		
+	}
 }

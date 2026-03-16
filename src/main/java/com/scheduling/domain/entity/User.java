@@ -1,5 +1,7 @@
 package com.scheduling.domain.entity;
 
+import java.util.function.BooleanSupplier;
+
 public class User {
 
     private final String username;
@@ -17,6 +19,26 @@ public class User {
     public boolean passwordMatches(String password) {
         return this.password.equals(password);
     }
+
+	public Object getPassword() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setUsername(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setPassword(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public BooleanSupplier isAdmin() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 

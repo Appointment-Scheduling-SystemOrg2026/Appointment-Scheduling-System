@@ -43,4 +43,14 @@ public class ReminderService {
             observer.notify(user, message);
         }
     }
+
+	public Integer getObserverCount() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void addObserver(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
 }

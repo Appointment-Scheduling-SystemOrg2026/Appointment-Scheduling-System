@@ -1,16 +1,37 @@
 package com.scheduling.domain.type;
 
-import com.scheduling.domain.entity.Appointment;
-
-public class GroupAppointment extends AppointmentType {
+/**
+ * Represents a group appointment with multiple participants.
+ *
+ * <p><b>User Story US5.2:</b> Group appointments have:</p>
+ * <ul>
+ *   <li>Longer duration (up to 120 minutes)</li>
+ *   <li>Multiple participants allowed (up to 10)</li>
+ *   <li>Larger venue requirements</li>
+ * </ul>
+ *
+ * @author Tasneem
+ * @version 1.0
+ */
+public class GroupAppointment implements AppointmentType {
 
     @Override
-    public boolean isValid(Appointment appointment) {
-        return appointment.getParticipants() >= 2;
+    public String getDescription() {
+        return "Group session with multiple participants";
     }
 
     @Override
-    public String getTypeName() {
-        return "GROUP";
+    public int getMaxDuration() {
+        return 120;
     }
+
+    @Override
+    public int getMaxParticipants() {
+        return 10;
+    }
+
+	public void getTypeName() {
+		// TODO Auto-generated method stub
+		
+	}
 }

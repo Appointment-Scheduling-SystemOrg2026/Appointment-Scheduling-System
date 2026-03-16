@@ -1,5 +1,7 @@
 package com.scheduling.domain.entity;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Administrator user with management privileges.
  *
@@ -11,6 +13,11 @@ public class Administrator extends User {
     public Administrator(String username, String password) {
         super(username, password);
     }
+
+	public BooleanSupplier isAdmin() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 

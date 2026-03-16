@@ -1,16 +1,42 @@
 package com.scheduling.domain.type;
 
-import com.scheduling.domain.entity.Appointment;
-
-public class InPersonAppointment extends AppointmentType {
+/**
+ * Represents an in-person (face-to-face) appointment.
+ *
+ * <p><b>User Story US5.2:</b> In-person appointments have:</p>
+ * <ul>
+ *   <li>Standard duration (up to 60 minutes)</li>
+ *   <li>Physical presence required</li>
+ *   <li>Room/location assignment needed</li>
+ * </ul>
+ *
+ * @author Tasneem
+ * @version 1.0
+ */
+public class InPersonAppointment implements AppointmentType {
 
     @Override
-    public boolean isValid(Appointment appointment) {
-        return appointment.getParticipants() <= 5;
+    public String getDescription() {
+        return "Face-to-face appointment at the facility";
     }
 
     @Override
-    public String getTypeName() {
-        return "IN_PERSON";
+    public int getMaxDuration() {
+        return 60;
     }
+
+    @Override
+    public int getMaxParticipants() {
+        return 4;
+    }
+
+	public void getTypeName1() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void getTypeName() {
+		// TODO Auto-generated method stub
+		
+	}
 }

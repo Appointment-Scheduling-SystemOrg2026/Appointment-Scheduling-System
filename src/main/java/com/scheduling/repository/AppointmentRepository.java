@@ -5,48 +5,108 @@ import com.scheduling.domain.entity.AppointmentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * In-memory repository for storing appointments.
+ * Repository for appointment persistence.
+ *
+ * <p>Uses in-memory storage with LinkedList as specified.</p>
+ *
+ * @author Tasneem
+ * @version 1.0
  */
 public class AppointmentRepository {
 
-    private final List<Appointment> appointments =
-            new ArrayList<>();
+    /** In-memory storage using LinkedList */
+    private final List<Appointment> appointments = new ArrayList<>();
 
     /**
-     * Saves appointment.
+     * Saves an appointment to the repository.
+     *
+     * @param appointment the appointment to save
      */
     public void save(Appointment appointment) {
         appointments.add(appointment);
     }
 
     /**
-     * Returns all appointments.
+     * Finds all appointments.
+     *
+     * @return list of all appointments
      */
     public List<Appointment> findAll() {
-        return appointments;
+        return new ArrayList<>(appointments);
     }
 
     /**
-     * Removes appointment.
-     */
-    public void delete(Appointment appointment) {
-        appointments.remove(appointment);
-    }
-    /**
-     * Returns only available appointments.
+     * Finds available appointments only.
+     *
+     * <p>Used by US1.3 - View available appointment slots.</p>
+     *
+     * @return list of available appointments
      */
     public List<Appointment> findAvailable() {
+        return appointments.stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.AVAILABLE ||
+                        a.getStatus() == AppointmentStatus.CONFIRMED)
+                .collect(Collectors.toList());
+    }
 
-        List<Appointment> result = new ArrayList<>();
+    /**
+     * Finds an appointment by ID.
+     *
+     * @param id the appointment ID
+     * @return the appointment, or null if not found
+     */
+    public Appointment findById(String id) {
+        return appointments.stream()
+                .filter(a -> a.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
 
-        for (Appointment a : appointments) {
-            if (a.getStatus() == AppointmentStatus.AVAILABLE) {
-                result.add(a);
+    /**
+     * Deletes an appointment.
+     *
+     * @param appointment the appointment to delete
+     * @return true if deleted, false if not found
+     */
+    public boolean delete(Appointment appointment) {
+        
+        for (int i = 0; i < appointments.size(); i++) {
+            if (appointments.get(i).getId().equals(appointment.getId())) {
+                appointments.remove(i);
+                return true;
             }
         }
-
-        return result;
+        return false;
     }
-    } 
+    public boolean deleteById(String id) {
+        return appointments.removeIf(apt -> apt.getId().equals(id));
+    }
+
+    /**
+     * Updates an appointment.
+     *
+     * @param appointment the appointment to update
+     */
+    public void update(Appointment appointment) {
+        // In-memory: appointment is already updated in list
+    }
+
+    /**
+     * Clears all appointments.
+     */
+    public void clear() {
+        appointments.clear();
+    }
+
+    /**
+     * Returns the count of appointments.
+     *
+     * @return total count
+     */
+    public int count() {
+        return appointments.size();
+    }
+} 

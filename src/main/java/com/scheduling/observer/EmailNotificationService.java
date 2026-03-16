@@ -1,66 +1,132 @@
+
+
+
 package com.scheduling.observer;
 
 import com.scheduling.domain.entity.User;
-import jakarta.mail.*;
-import jakarta.mail.internet.*;
-
-import java.util.Properties;
 
 /**
- * Sends real email reminders.
+ * Email notification service that sends real emails.
+ *
+ * @author Tasneem
+ * @version 2.0
  */
 public class EmailNotificationService implements Observer {
 
-    private final String senderEmail =
-            "scheduling.project2026@gmail.com";
+    private EmailSender emailSender;
+    private boolean enabled;
 
-    private final String appPassword =
-            "jgwg ymub wqmx xylu";
+    public EmailNotificationService() {
+        this.enabled = false;
+    }
+
+    public EmailNotificationService(String senderEmail, String senderPassword) {
+        this.emailSender = new EmailSender(senderEmail, senderPassword);
+        this.enabled = true;
+    }
 
     @Override
     public void notify(User user, String message) {
-
-        Properties props = new Properties();
-
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(
-                props,
-                new Authenticator() {
-                    protected PasswordAuthentication
-                    getPasswordAuthentication() {
-                        return new PasswordAuthentication(
-                                senderEmail,
-                                appPassword);
-                    }
-                });
-
-        try {
-
-            Message email = new MimeMessage(session);
-
-            email.setFrom(
-                    new InternetAddress(senderEmail));
-
-            email.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse(user.getUsername())
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(
+                    user.getUsername(),
+                    "Appointment Reminder",
+                    message
             );
-
-            email.setSubject("Appointment Reminder");
-
-            email.setText(message);
-
-            Transport.send(email);
-
-            System.out.println("Email sent successfully!");
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+    }
+    public void notifyEmail(String email, String message) {
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(email, "Appointment Reminder", message);
+        }
+    }
+
+    public void enableRealEmail(String senderEmail, String senderPassword) {
+        this.emailSender = new EmailSender(senderEmail, senderPassword);
+        this.enabled = true;
+    }
+    public void notifyWithEmail(String email, String message) {
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(email, "Appointment Reminder", message);
+        } else {
+            System.out.println("   (Email would be sent to: " + email + ")");
+        }
+    }
+
+    public void disableRealEmail() {
+        this.enabled = false;
     }
 }
 
+
+
+
+
+/*package com.scheduling.observer;
+
+import com.scheduling.domain.entity.User;
+
+/**
+ * Email notification service that sends real emails.
+ *
+ * @author Tasneem
+ * @version 2.0
+ */
+/*public class EmailNotificationService implements Observer {
+
+    private EmailSender emailSender;
+    private boolean enabled;
+
+    /**
+     * Creates service without real email (disabled mode).
+     */
+   /* public EmailNotificationService() {
+        this.enabled = false;
+    }
+
+    /**
+     * Creates service with real email sending enabled.
+     *
+     * @param senderEmail    your Gmail address
+     * @param senderPassword your Gmail App Password
+     */
+    /*public EmailNotificationService(String senderEmail, String senderPassword) {
+        this.emailSender = new EmailSender(senderEmail, senderPassword);
+        this.enabled = true;
+    }
+
+    @Override
+    public void notify(User user, String message) {
+        System.out.println("📬 [EmailService] Preparing email to: " + user.getUsername());
+        System.out.println("   Subject: Appointment Reminder");
+        System.out.println("   Body: " + message);
+
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(
+                    user.getUsername(),
+                    "Appointment Reminder",
+                    message
+            );
+        } else {
+            System.out.println("   (Email sending is disabled - Mock mode)");
+        }
+    }
+
+    /**
+     * Enables real email sending.
+     *
+     * @param senderEmail    your Gmail address
+     * @param senderPassword your Gmail App Password
+     */
+    /*public void enableRealEmail(String senderEmail, String senderPassword) {
+        this.emailSender = new EmailSender(senderEmail, senderPassword);
+        this.enabled = true;
+    }
+
+    /**
+     * Disables real email sending (mock mode).
+     */
+    /*public void disableRealEmail() {
+        this.enabled = false;
+    }
+}*/
