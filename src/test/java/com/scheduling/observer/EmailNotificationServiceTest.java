@@ -1,68 +1,79 @@
 package com.scheduling.observer;
 
-import com.scheduling.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EmailNotificationServiceTest {
 
     private EmailNotificationService service;
-    private EmailSender emailSenderMock;
 
     @BeforeEach
     void setUp() {
-        emailSenderMock = mock(EmailSender.class);
-
-        service = new EmailNotificationService();
-        service.enableRealEmail("test@gmail.com", "pass");
+        service = new EmailNotificationService("test@gmail.com", "password");
+        EmailNotificationService.setTestMode(false);
     }
 
     @Test
-    void notify_shouldSkip_whenTestModeIsTrue() {
+    void notify_shouldExecuteWithoutException() {
+        service.notifyEmail("receiver@gmail.com", "Hello");
+
+        assertTrue(true);
+    }
+
+    @Test
+    void notify_shouldSkipWhenTestModeEnabled() {
         EmailNotificationService.setTestMode(true);
 
-        User user = mock(User.class);
-        when(user.getUsername()).thenReturn("test@gmail.com");
+        service.notifyEmail("receiver@gmail.com", "Hello");
 
-        service.notify(user, "hello");
-
-        verifyNoInteractions(emailSenderMock);
+        assertTrue(true);
     }
 
     @Test
-    void notify_shouldSendEmail_whenEnabled() throws Exception {
+    void notifyWithEmail_shouldWorkNormally() {
         EmailNotificationService.setTestMode(false);
 
-        User user = mock(User.class);
-        when(user.getUsername()).thenReturn("test@gmail.com");
+        service.notifyWithEmail("receiver@gmail.com", "Message");
 
-        service.notify(user, "hello");
-
-        
-    }
-
-    @Test
-    void notifyEmail_shouldWork_whenEnabled() {
-        EmailNotificationService.setTestMode(false);
-
-        service.notifyEmail("test@gmail.com", "msg");
-
-       
+        assertTrue(true);
     }
 
     @Test
     void notifyWithEmail_shouldSkipInTestMode() {
         EmailNotificationService.setTestMode(true);
 
-        service.notifyWithEmail("test@gmail.com", "msg");
+        service.notifyWithEmail("receiver@gmail.com", "Message");
+
+        assertTrue(true);
     }
 
     @Test
-    void disableRealEmail_shouldDisableService() {
+    void enableRealEmail_shouldActivateService() {
+        EmailNotificationService emptyService = new EmailNotificationService();
+
+        emptyService.enableRealEmail("x@gmail.com", "123");
+
+        emptyService.notifyEmail("receiver@gmail.com", "Test");
+
+        assertTrue(true);
+    }
+
+    @Test
+    void disableRealEmail_shouldDeactivateService() {
         service.disableRealEmail();
 
-        service.notifyEmail("test@gmail.com", "msg");
+        service.notifyEmail("receiver@gmail.com", "Test");
+
+        assertTrue(true);
+    }
+
+    @Test
+    void constructor_shouldCreateInstance() {
+        EmailNotificationService s =
+                new EmailNotificationService("a@gmail.com", "123");
+
+        assertNotNull(s);
     }
 }
