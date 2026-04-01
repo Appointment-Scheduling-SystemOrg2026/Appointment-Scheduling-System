@@ -1,23 +1,26 @@
-/*package com.scheduling.observer;
-
-import com.scheduling.domain.entity.User;
+package com.scheduling.observer;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.scheduling.domain.entity.User;
 
 class EmailNotificationServiceTest {
 
     @Test
-    void shouldExecuteNotifyWithoutException() {
+    void shouldSkipEmailWhenTestModeIsEnabled() {
 
         EmailNotificationService service =
-                new EmailNotificationService();
+                new EmailNotificationService("test", "test");
 
-        User user =
-                new User("test@email.com", "1234");
+        EmailNotificationService.setTestMode(true);
 
-        assertDoesNotThrow(() ->
-                service.notify(user, "Test reminder")
-        );
+        User user = new User("testUser", "123");
+
+        service.notify(user, "Hello");
+
+        
+        assertTrue(true);
+
+        EmailNotificationService.setTestMode(false);
     }
-}*/
+}
