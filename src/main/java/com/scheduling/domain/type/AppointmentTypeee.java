@@ -1,4 +1,4 @@
-package com.scheduling.domain.type;
+/*package com.scheduling.domain.type;
 
 import com.scheduling.domain.entity.Appointment;
 
@@ -17,5 +17,5 @@ public abstract class AppointmentTypeee {
 		return 0;
 	}
 }
-
+*/
 
