@@ -16,6 +16,57 @@ public class MockNotificationService implements Observer {
 
     private int sentCount = 0;
     private StringBuilder log = new StringBuilder();
+    private String lastMessage = null;
+
+    @Override
+    public void notify(User user, String message) {
+        sentCount++;
+        lastMessage = message;
+
+        log.append(String.format("[%d] To: %s - %s%n",
+                sentCount, user.getUsername(), message));
+
+        System.out.println("🧪 [MockService] Message recorded (test mode)");
+    }
+
+    public int getSentCount() {
+        return sentCount;
+    }
+
+    public String getLog() {
+        return log.toString();
+    }
+
+    public void reset() {
+        sentCount = 0;
+        log = new StringBuilder();
+        lastMessage = null;
+    }
+
+    public boolean wasCalled() {
+        return sentCount > 0;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void clear() {
+        reset();
+    }
+
+    public int getCallCount() {
+        return sentCount;
+    }
+}
+
+
+
+
+/*public class MockNotificationService implements Observer {
+
+    private int sentCount = 0;
+    private StringBuilder log = new StringBuilder();
 
     @Override
     public void notify(User user, String message) {
@@ -29,7 +80,7 @@ public class MockNotificationService implements Observer {
      *
      * @return sent message count
      */
-    public int getSentCount() {
+   /* public int getSentCount() {
         return sentCount;
     }
 
@@ -38,14 +89,14 @@ public class MockNotificationService implements Observer {
      *
      * @return message log
      */
-    public String getLog() {
+  /*  public String getLog() {
         return log.toString();
     }
 
     /**
      * Resets the mock service.
      */
-    public void reset() {
+   /* public void reset() {
         sentCount = 0;
         log = new StringBuilder();
     }
@@ -74,4 +125,4 @@ public class MockNotificationService implements Observer {
 	
 
 	
-}
+}*/
