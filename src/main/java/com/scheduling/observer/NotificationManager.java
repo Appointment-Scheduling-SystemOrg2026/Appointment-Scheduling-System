@@ -1,6 +1,7 @@
 package com.scheduling.observer;
 
 import com.scheduling.domain.entity.Appointment;
+import java.time.format.DateTimeFormatter;
 import com.scheduling.domain.entity.User;
 
 import java.util.List;
@@ -20,9 +21,12 @@ public class NotificationManager {
     }
 
     public void sendReminder(User user, Appointment appointment) {
+
         String message = String.format(
-                "Reminder: You have an appointment on %s. Type: %s",
-                appointment.getDateTime().toString(),
+                "🔔 Appointment Reminder%n%n" +
+                "📅 Date & Time: %s%n" +
+                "📌 Type: %s%n",
+                appointment.getDateTime(),
                 appointment.getType().getClass().getSimpleName()
         );
 
@@ -30,10 +34,19 @@ public class NotificationManager {
             observer.notify(user, message);
         }
     }
+   
     public void sendReminderToEmail(String email, Appointment appointment) {
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
         String message = String.format(
-                "Reminder: You have an appointment on %s. Type: %s",
-                appointment.getDateTime().toString(),
+                "🔔 Appointment Reminder%n%n" +
+                "📅 Date: %s%n" +
+                "⏰ Time: %s%n" +
+                "📌 Type: %s%n",
+                appointment.getDateTime().format(dateFormatter),
+                appointment.getDateTime().format(timeFormatter),
                 appointment.getType().getClass().getSimpleName()
         );
 
@@ -45,6 +58,8 @@ public class NotificationManager {
             }
         }
     }
+    
+   
     
 
     public void addObserver(Observer observer) {

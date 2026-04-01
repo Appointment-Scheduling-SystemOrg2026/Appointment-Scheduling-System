@@ -1,7 +1,87 @@
-
-
-
 package com.scheduling.observer;
+
+import com.scheduling.domain.entity.User;
+
+public class EmailNotificationService implements Observer {
+
+    private EmailSender emailSender;
+    private boolean enabled;
+
+    
+    private static boolean testMode = false;
+
+    public static void setTestMode(boolean value) {
+        testMode = value;
+    }
+
+    public EmailNotificationService() {
+        this.enabled = false;
+    }
+
+    public EmailNotificationService(String senderEmail, String senderPassword) {
+        this.emailSender = new EmailSender(senderEmail, senderPassword);
+        this.enabled = true;
+    }
+
+    @Override
+    public void notify(User user, String message) {
+
+       
+        if (testMode) {
+            //System.out.println("TEST MODE: email skipped");
+            return;
+        }
+
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(
+                    user.getUsername(),
+                    "Appointment Reminder",
+                    message
+            );
+        }
+    }
+
+    public void notifyEmail(String email, String message) {
+
+        if (testMode) return;
+
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(email, "Appointment Reminder", message);
+        }
+    }
+
+    public void enableRealEmail(String senderEmail, String senderPassword) {
+        this.emailSender = new EmailSender(senderEmail, senderPassword);
+        this.enabled = true;
+    }
+
+    public void notifyWithEmail(String email, String message) {
+
+        if (testMode) {
+           // System.out.println("TEST MODE: email skipped");
+            return;
+        }
+
+        if (enabled && emailSender != null) {
+            emailSender.sendEmail(email, "Appointment Reminder", message);
+        } else {
+            System.out.println("   (Email would be sent to: " + email + ")");
+        }
+    }
+
+    public void disableRealEmail() {
+        this.enabled = false;
+    }
+}
+
+
+
+
+
+
+
+
+/*package com.scheduling.observer;
 
 import com.scheduling.domain.entity.User;
 
@@ -11,7 +91,7 @@ import com.scheduling.domain.entity.User;
  * @author Tasneem
  * @version 2.0
  */
-public class EmailNotificationService implements Observer {
+/*public class EmailNotificationService implements Observer {
 
     private EmailSender emailSender;
     private boolean enabled;
@@ -56,7 +136,11 @@ public class EmailNotificationService implements Observer {
     public void disableRealEmail() {
         this.enabled = false;
     }
-}
+}*/
+
+
+
+
 
 
 

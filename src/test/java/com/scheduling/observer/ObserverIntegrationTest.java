@@ -3,6 +3,8 @@ package com.scheduling.observer;
 import com.scheduling.domain.entity.Appointment;
 import com.scheduling.domain.entity.User;
 import com.scheduling.domain.type.InPersonAppointment;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,7 +12,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ObserverIntegrationTest {
-
+	@BeforeEach
+	void setup() {
+	    EmailNotificationService.setTestMode(true);
+	}
     @Test
     void testObserverIntegration() {
         List<Observer> observers = new ArrayList<>();

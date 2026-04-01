@@ -22,7 +22,10 @@ class BranchCoverageTest {
     private final InputStream originalSystemIn = System.in;
     private final PrintStream originalSystemOut = System.out;
     private ByteArrayOutputStream outputStream;
-
+    @BeforeEach
+    void setup() {
+        EmailNotificationService.setTestMode(true);
+    }
     @BeforeEach
     void setUp() {
         outputStream = new ByteArrayOutputStream();

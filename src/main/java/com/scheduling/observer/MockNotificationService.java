@@ -26,7 +26,7 @@ public class MockNotificationService implements Observer {
         log.append(String.format("[%d] To: %s - %s%n",
                 sentCount, user.getUsername(), message));
 
-        System.out.println("🧪 [MockService] Message recorded (test mode)");
+      //  System.out.println("🧪 [MockService] Message recorded (test mode)");
     }
 
     public int getSentCount() {

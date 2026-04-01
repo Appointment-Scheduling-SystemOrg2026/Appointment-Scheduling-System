@@ -1,10 +1,15 @@
 package com.scheduling.observer;
 
 import com.scheduling.domain.entity.User;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ObserverCoverageTest {
-
+	@BeforeEach
+	void setup() {
+	    EmailNotificationService.setTestMode(true);
+	}
     @Test
     void shouldExecuteNotification() {
 

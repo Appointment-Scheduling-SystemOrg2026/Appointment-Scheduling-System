@@ -7,8 +7,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
+
 class NotificationMockTest {
-	
+	@BeforeEach
+	void setup() {
+	    EmailNotificationService.setTestMode(true);
+	}
 	@Test
 	void shouldRecordLogAndCount() {
 

@@ -82,7 +82,7 @@ public class Main {
      * Initializes all system layers and dependencies.
      */
     private void initializeSystem() {
-        printHeader("SYSTEM INITIALIZATION");
+        printHeader("                         Welcome                   ");
 
         // Initialize Repository Layer
         repository = new AppointmentRepository();
@@ -118,7 +118,7 @@ public class Main {
         // Add sample data
         initializeSampleData();
 
-        System.out.println("✅ System initialized successfully!");
+        //System.out.println("✅ System initialized successfully!");
     }
 
     /**
@@ -138,7 +138,7 @@ public class Main {
      * Adds sample appointments for testing and demonstration.
      */
     private void initializeSampleData() {
-        System.out.println("📊 Loading sample data...");
+        //System.out.println("📊 Loading sample data...");
 
         // Sample 1: In-person appointment tomorrow
         repository.save(new Appointment(
@@ -172,7 +172,7 @@ public class Main {
                 new GroupAppointment()
         ));
 
-        System.out.println("✅ Sample appointments loaded: " + repository.findAll().size());
+       // System.out.println("✅ Sample appointments loaded: " + repository.findAll().size());
     }
 
     //  MAIN APPLICATION LOOP 
@@ -1037,7 +1037,7 @@ public class Main {
     //  UI HELPER METHODS 
 
     private void printWelcomeBanner() {
-        System.out.println();
+       /* System.out.println();
         System.out.println("********************************************************");
         System.out.println("                                                        ");
         System.out.println("       APPOINTMENT SCHEDULING SYSTEM                    ");
@@ -1046,7 +1046,7 @@ public class Main {
         System.out.println("                                                        ");
         System.out.println("    Sprints: 1, 2, 3, 4, 5                              ");
         System.out.println("                                                        ");
-        System.out.println("********************************************************");
+        System.out.println("********************************************************");*/
     }
 
     private void printHeader(String title) {

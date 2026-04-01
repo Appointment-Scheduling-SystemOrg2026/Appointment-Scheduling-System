@@ -18,7 +18,10 @@ class ObserverBranchCoverageTest {
 
     private User testUser;
     private Appointment testAppointment;
-
+    @BeforeEach
+    void setup() {
+        EmailNotificationService.setTestMode(true);
+    }
     @BeforeEach
     void setUp() {
         testUser = new User("testuser", "password");
