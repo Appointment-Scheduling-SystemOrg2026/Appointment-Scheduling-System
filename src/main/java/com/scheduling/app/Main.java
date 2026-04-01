@@ -11,7 +11,7 @@ import com.scheduling.observer.Observer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import io.github.cdimascio.dotenv.Dotenv;
+
 /**
  * Main Application Entry Point for the Appointment Scheduling System.
  *
@@ -109,10 +109,11 @@ public class Main {
         authService = new AuthenticationService();
 
         // Create default administrator
-        Dotenv dotenv = Dotenv.load();
+        admin = new Administrator("admin", "admin123");
+       /* Dotenv dotenv = Dotenv.load();
         admin = new Administrator(
             dotenv.get("ADMIN_USERNAME"),
-            dotenv.get("ADMIN_PASSWORD"));
+            dotenv.get("ADMIN_PASSWORD"));*/
 
         // Add sample data
         initializeSampleData();
