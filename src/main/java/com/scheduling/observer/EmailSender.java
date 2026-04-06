@@ -3,8 +3,12 @@ package com.scheduling.observer;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EmailSender {
+
+    private static final Logger logger = Logger.getLogger(EmailSender.class.getName());
 
     private final String senderEmail;
     private final String senderPassword;
@@ -40,16 +44,11 @@ public class EmailSender {
             return true;
 
         } catch (MessagingException e) {
-            System.out.println("ERROR: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to send email", e);
             return false;
         }
     }
 }
-
-
-
-
 
 
 
