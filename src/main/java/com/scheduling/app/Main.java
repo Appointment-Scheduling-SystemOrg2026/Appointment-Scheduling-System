@@ -29,6 +29,7 @@ import java.util.*;
  * @since 2025
  */
 public class Main {
+	 private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -100,8 +101,7 @@ public class Main {
         NotificationService consoleService = new NotificationService();
         EmailNotificationService emailService = new EmailNotificationService();
 
-         emailService.enableRealEmail("scheduling.project2026@gmail.com",
-        		 "jgwgymubwqmxxylu");
+        emailService.enableRealEmail(PROJECT_EMAIL, "jgwgymubwqmxxylu");
 
         List<Observer> notificationObservers = Arrays.asList(consoleService, emailService);
         notificationManager = new NotificationManager(notificationObservers);
@@ -311,7 +311,7 @@ public class Main {
         }
 
         currentUser = new User(username, "user123");
-        String fixedEmail = "scheduling.project2026@gmail.com";
+        String fixedEmail = PROJECT_EMAIL;
         System.out.println("✅ Welcome, " + username + "!");
 
         userMenu();
@@ -432,7 +432,7 @@ public class Main {
 
                 // Send confirmation notification
                 if (currentUser != null) {
-                	notificationManager.sendReminderToEmail("scheduling.project2026@gmail.com", appointment);
+                	 notificationManager.sendReminderToEmail(PROJECT_EMAIL, appointment);
                 }
             } else {
                 System.out.println("❌ Booking rejected! Please check the rules:");
