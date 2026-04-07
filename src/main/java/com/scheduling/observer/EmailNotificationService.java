@@ -3,6 +3,7 @@ package com.scheduling.observer;
 import com.scheduling.domain.entity.User;
 
 public class EmailNotificationService implements Observer {
+	  private static final String APPOINTMENT_REMINDER_SUBJECT = "Appointment Reminder";
 
     private EmailSender emailSender;
     private boolean enabled;
@@ -35,7 +36,7 @@ public class EmailNotificationService implements Observer {
         if (enabled && emailSender != null) {
             emailSender.sendEmail(
                     user.getUsername(),
-                    "Appointment Reminder",
+                    APPOINTMENT_REMINDER_SUBJECT,
                     message
             );
         }
@@ -46,7 +47,7 @@ public class EmailNotificationService implements Observer {
         if (testMode) return;
 
         if (enabled && emailSender != null) {
-            emailSender.sendEmail(email, "Appointment Reminder", message);
+        	 emailSender.sendEmail(email, APPOINTMENT_REMINDER_SUBJECT, message);
         }
     }
 
@@ -63,7 +64,7 @@ public class EmailNotificationService implements Observer {
         }
 
         if (enabled && emailSender != null) {
-            emailSender.sendEmail(email, "Appointment Reminder", message);
+        	 emailSender.sendEmail(email, APPOINTMENT_REMINDER_SUBJECT, message);
         } else {
             System.out.println("   (Email would be sent to: " + email + ")");
         }

@@ -30,6 +30,23 @@ import java.util.*;
  */
 public class Main {
 	 private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
+	 private static final String ADMIN_PASSWORD = "admin123";
+	 private static final String ENTER_CHOICE_PROMPT = "Enter your choice: ";
+	 private static final String MINUTES_SUFFIX = " minutes";
+	 private static final String INVALID_SELECTION_MSG = "Invalid selection.";
+	 private static final String ENTER_APPOINTMENT_NUMBER_PROMPT = "\nEnter appointment number: ";
+	 private static final String HORIZONTAL_SEPARATOR = "========================================================";
+	 private static final String SHORT_SEPARATOR = "   --------------------------------";
+	 private static final String LIST_ITEM_PREFIX = "   - ";
+	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
+	 private static final String EMPTY_LINE_SPACING = "========================================================";
+
+
+	
+
+	    
+	
+	    private static final String ADMIN_USERNAME = "admin";
 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -109,7 +126,7 @@ public class Main {
         authService = new AuthenticationService();
 
         // Create default administrator
-        admin = new Administrator("admin", "admin123");
+        admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
        /* Dotenv dotenv = Dotenv.load();
         admin = new Administrator(
             dotenv.get("ADMIN_USERNAME"),
@@ -195,8 +212,7 @@ public class Main {
             System.out.println("║  4. View All User Stories                            ║");
             System.out.println("║  5. Exit                                             ║");
             printSeparator();
-            System.out.print("Enter your choice: ");
-
+            System.out.print(ENTER_CHOICE_PROMPT);
             int choice = readIntInput();
 
             switch (choice) {
@@ -264,7 +280,7 @@ public class Main {
             System.out.println("║  5. System Statistics                                ║");
             System.out.println("║  6. Logout (US1.2)                                   ║");
             printSeparator();
-            System.out.print("Enter your choice: ");
+            System.out.print(ENTER_CHOICE_PROMPT);
 
             int choice = readIntInput();
 
@@ -334,7 +350,7 @@ public class Main {
             System.out.println("║  5. View My Bookings                                 ║");
             System.out.println("║  6. Back to Main Menu                                ║");
             printSeparator();
-            System.out.print("Enter your choice: ");
+            System.out.print(ENTER_CHOICE_PROMPT);
 
             int choice = readIntInput();
 
@@ -417,7 +433,7 @@ public class Main {
         System.out.println("\nBooking Summary:");
         System.out.println("   Type: " + selectedType.getClass().getSimpleName());
         System.out.println("   Date: " + dateTime.format(DATE_FORMAT));
-        System.out.println("   Duration: " + duration + " minutes");
+        System.out.println("   Duration: " + duration + MINUTES_SUFFIX);
         System.out.println("   Participants: " + participants);
 
         System.out.print("\nConfirm booking? (y/n): ");
@@ -436,7 +452,8 @@ public class Main {
                 }
             } else {
                 System.out.println("❌ Booking rejected! Please check the rules:");
-                System.out.println("   - Maximum duration: " + MAX_DURATION + " minutes");
+                System.out.println("   - Maximum duration: " + MAX_DURATION + MINUTES_SUFFIX);
+
                 System.out.println("   - Maximum participants: " + MAX_PARTICIPANTS);
             }
         } else {
@@ -466,7 +483,7 @@ public class Main {
         int choice = readIntInput();
 
         if (choice < 1 || choice > 7) {
-            System.out.println("Invalid selection.");
+            System.out.println(INVALID_SELECTION_MSG);
             return null;
         }
 
@@ -493,11 +510,11 @@ public class Main {
 
         displayAppointmentList(appointments, "Select appointment to modify:");
 
-        System.out.print("\nEnter appointment number: ");
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= appointments.size()) {
-            System.out.println("Invalid selection.");
+            System.out.println(INVALID_SELECTION_MSG);
             return;
         }
 
@@ -543,11 +560,11 @@ public class Main {
 
         displayAppointmentList(appointments, "Select appointment to cancel:");
 
-        System.out.print("\nEnter appointment number: ");
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= appointments.size()) {
-            System.out.println("Invalid selection.");
+            System.out.println(INVALID_SELECTION_MSG);
             return;
         }
 
@@ -588,11 +605,11 @@ public class Main {
 
         displayAppointmentList(allAppointments, "Select reservation to modify:");
 
-        System.out.print("\nEnter appointment number: ");
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= allAppointments.size()) {
-            System.out.println("Invalid selection.");
+            System.out.println(INVALID_SELECTION_MSG);
             return;
         }
 
@@ -614,10 +631,10 @@ public class Main {
      * Admin cancels any reservation (US4.2).
      */
     private void adminCancelReservation() {
-        System.out.println();
-        System.out.println("========================================================");
-        System.out.println("  ADMIN: CANCEL RESERVATION");
-        System.out.println("========================================================");
+    	System.out.println();
+    	System.out.println(HORIZONTAL_SEPARATOR);
+    	System.out.println("  ADMIN: CANCEL RESERVATION");
+    	System.out.println(HORIZONTAL_SEPARATOR);
 
         List<Appointment> allAppointments = repository.findAll();
 
@@ -632,7 +649,7 @@ public class Main {
             System.out.println("  [" + (i + 1) + "] " + formatAppointment(apt));
         }
 
-        System.out.print("\nEnter appointment number: ");
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
         int index = readIntInput() - 1;
 
         if (index >= 0 && index < allAppointments.size()) {
@@ -643,7 +660,7 @@ public class Main {
             
             System.out.println(">> Reservation cancelled by Admin.");
         } else {
-            System.out.println("Invalid selection.");
+        	System.out.println(INVALID_SELECTION_MSG);
         }
     }
 
@@ -713,20 +730,21 @@ public class Main {
         printDemoHeader("SPRINT 1: Core Scheduling & Authentication");
 
         System.out.println("\nUS1.1 - Administrator Login");
-        System.out.println("   --------------------------------");
-        boolean loginSuccess = authService.login(admin, "admin", "admin123");
+        System.out.println(SHORT_SEPARATOR);
+        boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
+
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));
 
         System.out.println("\nUS1.3 - View Available Slots");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         List<Appointment> slots = appointmentService.viewAvailableSlots();
         System.out.println("   Available slots: " + slots.size());
         for (Appointment apt : slots) {
-            System.out.println("   - " + formatAppointmentShort(apt));
+        	 System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));
         }
 
         System.out.println("\nUS1.2 - Administrator Logout");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         authService.logout();
         System.out.println("   Logout result: SUCCESS");
     }
@@ -735,7 +753,7 @@ public class Main {
         printDemoHeader("SPRINT 2: Booking & Business Rules");
 
         System.out.println("\nUS2.1 - Book Appointment");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         Appointment newApt = new Appointment(
                 LocalDateTime.now().plusDays(3),
                 30,
@@ -746,8 +764,8 @@ public class Main {
         System.out.println("   Booking result: " + (booked ? "CONFIRMED" : "REJECTED"));
 
         System.out.println("\nUS2.2 - Duration Rule Enforcement");
-        System.out.println("   --------------------------------");
-        System.out.println("   Max duration allowed: " + MAX_DURATION + " minutes");
+        System.out.println(SHORT_SEPARATOR);
+        System.out.println("   Max duration allowed: " + MAX_DURATION + MINUTES_SUFFIX);
         Appointment longApt = new Appointment(
                 LocalDateTime.now().plusDays(1),
                 200,
@@ -758,7 +776,7 @@ public class Main {
         System.out.println("   Booking 200 min: " + (longResult ? "ACCEPTED" : "REJECTED (as expected)"));
 
         System.out.println("\nUS2.3 - Participant Limit Enforcement");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         System.out.println("   Max participants allowed: " + MAX_PARTICIPANTS);
         Appointment crowdedApt = new Appointment(
                 LocalDateTime.now().plusDays(1),
@@ -774,7 +792,7 @@ public class Main {
         printDemoHeader("SPRINT 3: Notifications & Mocking");
 
         System.out.println("\nUS3.1 - Send Appointment Reminders");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         System.out.println("   Demo Mode: Sending reminders is simulated...");      
         System.out.println("   Reminder logic demonstrated without sending real emails.");
         System.out.println("   Channels simulated: Console Logger, Email Service");
@@ -794,7 +812,7 @@ public class Main {
         printDemoHeader("SPRINT 4: Advanced Management Rules");
 
         System.out.println("\nUS4.1 - Modify Appointment");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         List<Appointment> appointments = repository.findAll();
         if (!appointments.isEmpty()) {
             Appointment original = appointments.get(0);
@@ -809,8 +827,8 @@ public class Main {
         }
 
         System.out.println("\nUS4.2 - Admin Manage Reservations");
-        System.out.println("   --------------------------------");
-        authService.login(admin, "admin", "admin123");
+        System.out.println(SHORT_SEPARATOR);
+        authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
         System.out.println("   Admin can modify/cancel ANY reservation");
         System.out.println("   Admin privileges confirmed");
     }
@@ -819,17 +837,17 @@ public class Main {
         printDemoHeader("SPRINT 5: Appointment Types & Polymorphism");
 
         System.out.println("\nUS5.1 - Support Multiple Appointment Types");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         System.out.println("   Available types:");
         for (AppointmentType type : appointmentTypes) {
-            System.out.println("   - " + type.getClass().getSimpleName());
+        	System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName());
         }
 
         System.out.println("\nUS5.2 - Apply Different Rules Per Type");
-        System.out.println("   --------------------------------");
+        System.out.println(SHORT_SEPARATOR);
         System.out.println("   Each type can have specific behavior:");
         for (AppointmentType type : appointmentTypes) {
-            System.out.println("   - " + type.getClass().getSimpleName() + ": " + type.getDescription());
+        	 System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName() + ": " + type.getDescription());
         }
     }
 
@@ -1051,31 +1069,31 @@ public class Main {
 
     private void printHeader(String title) {
         System.out.println();
-        System.out.println("========================================================");
+        System.out.println(HORIZONTAL_SEPARATOR);
         System.out.println("  " + title);
-        System.out.println("========================================================");
+        System.out.println(HORIZONTAL_SEPARATOR);
     }
-
+    
     private void printDemoHeader(String title) {
         System.out.println();
-        System.out.println("--------------------------------------------------------");
+        System.out.println(DASH_SEPARATOR);
         System.out.println("  " + title);
-        System.out.println("--------------------------------------------------------");
+        System.out.println(DASH_SEPARATOR);
     }
 
     private void printSeparator() {
-        System.out.println("--------------------------------------------------------");
+    	 System.out.println(DASH_SEPARATOR);
     }
 
     private void printGoodbyeMessage() {
         System.out.println();
-        //System.out.println("========================================================");
+        // System.out.println(EMPTY_LINE_SPACING);
         System.out.println("                                                        ");
         System.out.println("          Thank you for using our system!               ");
         System.out.println("                                                        ");
         System.out.println("              Have a wonderful day!                     ");
         System.out.println("                                                        ");
-       // System.out.println("========================================================");
+       //  System.out.println(EMPTY_LINE_SPACING);
     }
 
     //  MAIN ENTRY POINT 
