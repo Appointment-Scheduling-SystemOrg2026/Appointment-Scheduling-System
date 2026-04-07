@@ -42,7 +42,7 @@ public class Main {
 	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
 	 private static final String ADMIN_USERNAME = "admin";
 	 private static final String EMPTY_LINE = "                                                        ";   
-
+	 private static final String ADMIN_PASSWORD = System.getenv("ADMIN_PASSWORD");
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
     private static final int MAX_DURATION = 120;
@@ -88,7 +88,7 @@ public class Main {
         initializeSystem();
         initializeAppointmentTypes();
         authService = new AuthenticationService();
-        admin = new Administrator(ADMIN_USERNAME, "admin123");
+        admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
     //  INITIALIZATION METHODS 
@@ -123,7 +123,7 @@ public class Main {
         authService = new AuthenticationService();
 
         // Create default administrator
-        admin = new Administrator(ADMIN_USERNAME, "admin123");
+        admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
        
 
         // Add sample data
@@ -725,7 +725,7 @@ public class Main {
 
         System.out.println("\nUS1.1 - Administrator Login");
         System.out.println(SHORT_SEPARATOR);
-        boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, "admin123");
+        boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
 
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));
 
@@ -813,7 +813,7 @@ public class Main {
 
         System.out.println("\nUS4.2 - Admin Manage Reservations");
         System.out.println(SHORT_SEPARATOR);
-        authService.login(admin, ADMIN_USERNAME, "admin123");
+        authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
         System.out.println("   Admin can modify/cancel ANY reservation");
         System.out.println("   Admin privileges confirmed");
     }
