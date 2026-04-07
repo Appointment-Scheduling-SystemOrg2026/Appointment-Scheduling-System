@@ -129,7 +129,7 @@ public class Main {
         // Add sample data
         initializeSampleData();
 
-        //System.out.println("✅ System initialized successfully!");
+        
     }
 
     /**
@@ -149,7 +149,7 @@ public class Main {
      * Adds sample appointments for testing and demonstration.
      */
     private void initializeSampleData() {
-        //System.out.println("📊 Loading sample data...");
+        
 
         // Sample 1: In-person appointment tomorrow
         repository.save(new Appointment(
@@ -183,7 +183,7 @@ public class Main {
                 new GroupAppointment()
         ));
 
-       // System.out.println("✅ Sample appointments loaded: " + repository.findAll().size());
+      
     }
 
     //  MAIN APPLICATION LOOP 
@@ -239,7 +239,7 @@ public class Main {
      */
     private void adminLoginFlow() {
         printHeader("ADMINISTRATOR LOGIN");
-       // System.out.println("Default credentials: admin / admin123");
+       
         printSeparator();
 
         System.out.print("Username: ");
@@ -791,16 +791,7 @@ public class Main {
         System.out.println("   Reminder logic demonstrated without sending real emails.");
         System.out.println("   Channels simulated: Console Logger, Email Service");
     }
-    /*private void demoSprint3() {
-        printDemoHeader("SPRINT 3: Notifications & Mocking");
-
-        System.out.println("\nUS3.1 - Send Appointment Reminders");
-        System.out.println("   --------------------------------");
-        System.out.println("   Sending reminders using Observer Pattern...");
-        notificationManager.sendReminder(admin, repository.findAll().get(0));
-        System.out.println("   Reminder sent via multiple channels");
-        System.out.println("   Channels: Console Logger, Email Service");
-    }*/
+   
 
     private void demoSprint4() {
         printDemoHeader("SPRINT 4: Advanced Management Rules");
