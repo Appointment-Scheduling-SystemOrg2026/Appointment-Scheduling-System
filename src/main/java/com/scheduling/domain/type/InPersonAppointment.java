@@ -46,28 +46,4 @@ public class InPersonAppointment implements AppointmentType {
 	
 	
 	
-   /* @Override
-    public String getDescription() {
-        return "Face-to-face appointment at the facility";
-    }
-
-    @Override
-    public int getMaxDuration() {
-        return 60;
-    }
-
-    @Override
-    public int getMaxParticipants() {
-        return 4;
-    }
-
-	public void getTypeName1() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void getTypeName() {
-		// TODO Auto-generated method stub
-		
-	}
-}*/
+   

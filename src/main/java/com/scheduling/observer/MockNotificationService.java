@@ -1,7 +1,5 @@
 package com.scheduling.observer;
 
-import java.util.function.BooleanSupplier;
-
 import com.scheduling.domain.entity.User;
 
 /**
@@ -10,23 +8,23 @@ import com.scheduling.domain.entity.User;
  * <p>Records sent messages in test mode without actually sending.</p>
  *
  * @author Tasneem
- * @version 1.0
+ * @version 1.1
  */
 public class MockNotificationService implements Observer {
 
     private int sentCount = 0;
     private StringBuilder log = new StringBuilder();
     private String lastMessage = null;
+    private int callCount = 0;  
 
     @Override
     public void notify(User user, String message) {
         sentCount++;
+        callCount++;              
         lastMessage = message;
 
         log.append(String.format("[%d] To: %s - %s%n",
                 sentCount, user.getUsername(), message));
-
-      //  System.out.println("🧪 [MockService] Message recorded (test mode)");
     }
 
     public int getSentCount() {
@@ -39,6 +37,7 @@ public class MockNotificationService implements Observer {
 
     public void reset() {
         sentCount = 0;
+        callCount = 0;
         log = new StringBuilder();
         lastMessage = null;
     }
@@ -56,73 +55,6 @@ public class MockNotificationService implements Observer {
     }
 
     public int getCallCount() {
-        return sentCount;
+        return callCount;
     }
 }
-
-
-
-
-/*public class MockNotificationService implements Observer {
-
-    private int sentCount = 0;
-    private StringBuilder log = new StringBuilder();
-
-    @Override
-    public void notify(User user, String message) {
-        sentCount++;
-        log.append(String.format("[%d] To: %s - %s%n", sentCount, user.getUsername(), message));
-        System.out.println("🧪 [MockService] Message recorded (test mode)");
-    }
-
-    /**
-     * Returns the number of messages sent.
-     *
-     * @return sent message count
-     */
-   /* public int getSentCount() {
-        return sentCount;
-    }
-
-    /**
-     * Returns the log of all sent messages.
-     *
-     * @return message log
-     */
-  /*  public String getLog() {
-        return log.toString();
-    }
-
-    /**
-     * Resets the mock service.
-     */
-   /* public void reset() {
-        sentCount = 0;
-        log = new StringBuilder();
-    }
-
-	public BooleanSupplier wasCalled() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Object getLastMessage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-
-	public int getCallCount() {
-	    return getCallCount();
-	}
-
-	
-
-	
-}*/

@@ -11,6 +11,7 @@ import com.scheduling.observer.Observer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 /**
@@ -45,6 +46,9 @@ public class Main {
 	 private static final String ADMIN_PASSWORD =
 		        Optional.ofNullable(System.getenv("ADMIN_PASSWORD"))
 		                .orElse("admin123");
+	 private static final Logger logger = Logger.getLogger(Main.class.getName());
+	 
+	 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
     private static final int MAX_DURATION = 120;
@@ -80,6 +84,7 @@ public class Main {
 
     /** List of all supported appointment types */
     private final List<AppointmentType> appointmentTypes = new ArrayList<>();
+    
 
     //  CONSTRUCTOR 
 
@@ -99,7 +104,9 @@ public class Main {
      * Initializes all system layers and dependencies.
      */
     private void initializeSystem() {
+    	 logger.info(HORIZONTAL_SEPARATOR);
         printHeader("                         Welcome                   ");
+        logger.info(HORIZONTAL_SEPARATOR);
 
         // Initialize Repository Layer
         repository = new AppointmentRepository();
@@ -200,13 +207,13 @@ public class Main {
 
         while (running) {
             printSeparator();
-            System.out.println("║                    MAIN MENU                         ║");
+            logger.info("║                    MAIN MENU                         ║");
             printSeparator();
-            System.out.println("║  1. Administrator Login                              ║");
-            System.out.println("║  2. User Mode                                        ║");
-            System.out.println("║  3. System Demo (All Sprints)                        ║");
-            System.out.println("║  4. View All User Stories                            ║");
-            System.out.println("║  5. Exit                                             ║");
+            logger.info("║  1. Administrator Login                              ║");
+            logger.info("║  2. User Mode                                        ║");
+            logger.info("║  3. System Demo (All Sprints)                        ║");
+            logger.info("║  4. View All User Stories                            ║");
+            logger.info("║  5. Exit                                             ║");
             printSeparator();
             System.out.print(ENTER_CHOICE_PROMPT);
             int choice = readIntInput();
@@ -229,7 +236,7 @@ public class Main {
                     printGoodbyeMessage();
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                	logger.warning("Invalid choice. Please try again.");
             }
         }
     }
@@ -244,18 +251,18 @@ public class Main {
        
         printSeparator();
 
-        System.out.print("Username: ");
+        logger.info("Username: ");
         String username = scanner.nextLine().trim();
 
-        System.out.print("Password: ");
+        logger.info("Password: ");
         String password = scanner.nextLine().trim();
 
         if (authService.login(admin, username, password)) {
-            System.out.println("\n✅ Login successful! Welcome, Administrator " + username);
+        	System.out.println("\n✅ Login successful! Welcome, Administrator " + username);
             adminMenu();
         } else {
-            System.out.println("\n❌ Login failed! Invalid credentials.");
-            System.out.println("Hint: Use admin / admin123");
+        	System.out.println("\n❌ Login failed! Invalid credentials.");
+        	System.out.println("Hint: Use admin / admin123");
         }
     }
 
@@ -267,14 +274,14 @@ public class Main {
 
         while (loggedIn) {
             printSeparator();
-            System.out.println("║              ADMINISTRATOR DASHBOARD                 ║");
+            logger.info("║              ADMINISTRATOR DASHBOARD                 ║");
             printSeparator();
-            System.out.println("║  1. View All Appointments                            ║");
-            System.out.println("║  2. Send Appointment Reminders (US3.1)               ║");
-            System.out.println("║  3. Modify Any Reservation (US4.2)                   ║");
-            System.out.println("║  4. Cancel Any Reservation (US4.2)                   ║");
-            System.out.println("║  5. System Statistics                                ║");
-            System.out.println("║  6. Logout (US1.2)                                   ║");
+            logger.info("║  1. View All Appointments                            ║");
+            logger.info("║  2. Send Appointment Reminders (US3.1)               ║");
+            logger.info("║  3. Modify Any Reservation (US4.2)                   ║");
+            logger.info("║  4. Cancel Any Reservation (US4.2)                   ║");
+            logger.info("║  5. System Statistics                                ║");
+            logger.info("║  6. Logout (US1.2)                                   ║");
             printSeparator();
             System.out.print(ENTER_CHOICE_PROMPT);
 
@@ -302,7 +309,7 @@ public class Main {
                     loggedIn = false;
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                	logger.warning("Invalid choice.");
             }
         }
     }
@@ -323,7 +330,7 @@ public class Main {
         }
 
         currentUser = new User(username, "user123");
-        String fixedEmail = PROJECT_EMAIL;
+       
         System.out.println("✅ Welcome, " + username + "!");
 
         userMenu();
@@ -337,14 +344,14 @@ public class Main {
 
         while (active) {
             printSeparator();
-            System.out.println("║                    USER MENU                         ║");
+            logger.info("║                    USER MENU                         ║");
             printSeparator();
-            System.out.println("║  1. View Available Slots (US1.3)                     ║");
-            System.out.println("║  2. Book Appointment (US2.1)                         ║");
-            System.out.println("║  3. Modify My Appointment (US4.1)                    ║");
-            System.out.println("║  4. Cancel My Appointment (US4.1)                    ║");
-            System.out.println("║  5. View My Bookings                                 ║");
-            System.out.println("║  6. Back to Main Menu                                ║");
+            logger.info("║  1. View Available Slots (US1.3)                     ║");
+            logger.info("║  2. Book Appointment (US2.1)                         ║");
+            logger.info("║  3. Modify My Appointment (US4.1)                    ║");
+            logger.info("║  4. Cancel My Appointment (US4.1)                    ║");
+            logger.info("║  5. View My Bookings                                 ║");
+            logger.info("║  6. Back to Main Menu                                ║");
             printSeparator();
             System.out.print(ENTER_CHOICE_PROMPT);
 
@@ -371,7 +378,7 @@ public class Main {
                     System.out.println("Returning to main menu...");
                     break;
                 default:
-                    System.out.println("Invalid choice.");
+                	logger.warning("Invalid choice.");
             }
         }
     }
@@ -426,34 +433,34 @@ public class Main {
         // Step 5: Create and Book
         Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
 
-        System.out.println("\nBooking Summary:");
-        System.out.println("   Type: " + selectedType.getClass().getSimpleName());
-        System.out.println("   Date: " + dateTime.format(DATE_FORMAT));
-        System.out.println("   Duration: " + duration + MINUTES_SUFFIX);
-        System.out.println("   Participants: " + participants);
+        logger.info("\nBooking Summary:");
+        logger.info("   Type: " + selectedType.getClass().getSimpleName());
+        logger.info("   Date: " + dateTime.format(DATE_FORMAT));
+        logger.info("   Duration: " + duration + MINUTES_SUFFIX);
+        logger.info("   Participants: " + participants);
 
-        System.out.print("\nConfirm booking? (y/n): ");
+        logger.info("\nConfirm booking? (y/n): ");
         String confirm = scanner.nextLine().trim().toLowerCase();
 
         if (confirm.equals("y") || confirm.equals("yes")) {
             boolean success = appointmentService.book(appointment);
 
             if (success) {
-                System.out.println("✅ Appointment booked successfully!");
-                System.out.println("   Status: " + appointment.getStatus());
+            	logger.info("✅ Appointment booked successfully!");
+            	logger.info("   Status: " + appointment.getStatus());
 
                 // Send confirmation notification
                 if (currentUser != null) {
                 	 notificationManager.sendReminderToEmail(PROJECT_EMAIL, appointment);
                 }
             } else {
-                System.out.println("❌ Booking rejected! Please check the rules:");
-                System.out.println("   - Maximum duration: " + MAX_DURATION + MINUTES_SUFFIX);
+            	logger.warning("❌ Booking rejected! Please check the rules:");
+            	logger.info("   - Maximum duration: " + MAX_DURATION + MINUTES_SUFFIX);
 
-                System.out.println("   - Maximum participants: " + MAX_PARTICIPANTS);
+            	logger.info("   - Maximum participants: " + MAX_PARTICIPANTS);
             }
         } else {
-            System.out.println("Booking cancelled.");
+        	logger.info("Booking cancelled.");
         }
     }
 
@@ -463,8 +470,8 @@ public class Main {
      * Allows user to select an appointment type.
      */
     private AppointmentType selectAppointmentType() {
-        System.out.println("\nSelect Appointment Type (US5.1):");
-        System.out.println("   -----------------------------");
+    	logger.info("\nSelect Appointment Type (US5.1):");
+    	logger.info("   -----------------------------");
 
         String[] typeNames = {
                 "Urgent", "Follow-up", "Assessment",
@@ -479,7 +486,7 @@ public class Main {
         int choice = readIntInput();
 
         if (choice < 1 || choice > 7) {
-            System.out.println(INVALID_SELECTION_MSG);
+        	logger.warning(INVALID_SELECTION_MSG);
             return null;
         }
 
@@ -510,7 +517,7 @@ public class Main {
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= appointments.size()) {
-            System.out.println(INVALID_SELECTION_MSG);
+        	logger.warning(INVALID_SELECTION_MSG);
             return;
         }
 
@@ -560,7 +567,7 @@ public class Main {
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= appointments.size()) {
-            System.out.println(INVALID_SELECTION_MSG);
+        	logger.warning(INVALID_SELECTION_MSG);
             return;
         }
 
@@ -974,7 +981,7 @@ public class Main {
         try {
             return LocalDateTime.of(year, month, day, hour, minute);
         } catch (Exception e) {
-            System.out.println("Invalid date/time entered.");
+        	logger.warning("Invalid date/time entered.");
             return null;
         }
     }
