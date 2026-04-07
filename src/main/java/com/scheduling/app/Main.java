@@ -42,7 +42,9 @@ public class Main {
 	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
 	 private static final String ADMIN_USERNAME = "admin";
 	 private static final String EMPTY_LINE = "                                                        ";   
-	 private static final String ADMIN_PASSWORD = System.getenv("ADMIN_PASSWORD");
+	 private static final String ADMIN_PASSWORD =
+		        Optional.ofNullable(System.getenv("ADMIN_PASSWORD"))
+		                .orElse("admin123");
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
     private static final int MAX_DURATION = 120;
