@@ -813,7 +813,7 @@ public class Main {
 
         System.out.println("\nUS4.2 - Admin Manage Reservations");
         System.out.println(SHORT_SEPARATOR);
-        authService.login(admin, "admin", "admin123");
+        authService.login(admin, ADMIN_USERNAME, "admin123");
         System.out.println("   Admin can modify/cancel ANY reservation");
         System.out.println("   Admin privileges confirmed");
     }
@@ -1040,6 +1040,10 @@ public class Main {
     //  UI HELPER METHODS 
 
     private void printWelcomeBanner() {
+    	 System.out.println(HORIZONTAL_SEPARATOR);
+    	    System.out.println("      APPOINTMENT SCHEDULING SYSTEM");
+    	    System.out.println("         Welcome to the system");
+    	    System.out.println(HORIZONTAL_SEPARATOR);
        
     }
 
