@@ -30,9 +30,7 @@ import io.github.cdimascio.dotenv.Dotenv;
  * @since 2025
  */
 public class Main {
-	private static final Dotenv dotenv = Dotenv.load();
-    private static final String ADMIN_USERNAME = dotenv.get("ADMIN_USERNAME");
-    private static final String ADMIN_PASSWORD = dotenv.get("ADMIN_PASSWORD");
+	
 	 private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
 	// private static final String ADMIN_PASSWORD = "admin123";
 	 private static final String ENTER_CHOICE_PROMPT = "Enter your choice: ";
@@ -44,13 +42,7 @@ public class Main {
 	 private static final String LIST_ITEM_PREFIX = "   - ";
 	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
 	 private static final String EMPTY_LINE_SPACING = "========================================================";
-
-
-	
-
-	    
-	
-	   // private static final String ADMIN_USERNAME = "admin";
+	    // private static final String ADMIN_USERNAME = "admin";
 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -97,7 +89,7 @@ public class Main {
         initializeSystem();
         initializeAppointmentTypes();
         authService = new AuthenticationService();
-        admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
+        admin = new Administrator("admin", "admin123");
     }
 
     //  INITIALIZATION METHODS 
@@ -132,7 +124,7 @@ public class Main {
         authService = new AuthenticationService();
 
         // Create default administrator
-        admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
+        admin = new Administrator("admin", "admin123");
        /* Dotenv dotenv = Dotenv.load();
         admin = new Administrator(
             dotenv.get("ADMIN_USERNAME"),
@@ -737,7 +729,7 @@ public class Main {
 
         System.out.println("\nUS1.1 - Administrator Login");
         System.out.println(SHORT_SEPARATOR);
-        boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
+        boolean loginSuccess = authService.login(admin, "admin", "admin123");
 
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));
 
@@ -834,7 +826,7 @@ public class Main {
 
         System.out.println("\nUS4.2 - Admin Manage Reservations");
         System.out.println(SHORT_SEPARATOR);
-        authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
+        authService.login(admin, "admin", "admin123");
         System.out.println("   Admin can modify/cancel ANY reservation");
         System.out.println("   Admin privileges confirmed");
     }
