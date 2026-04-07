@@ -11,6 +11,7 @@ import com.scheduling.observer.Observer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import io.github.cdimascio.dotenv.Dotenv;
 
 /**
  * Main Application Entry Point for the Appointment Scheduling System.
@@ -29,8 +30,11 @@ import java.util.*;
  * @since 2025
  */
 public class Main {
+	private static final Dotenv dotenv = Dotenv.load();
+    private static final String ADMIN_USERNAME = dotenv.get("ADMIN_USERNAME");
+    private static final String ADMIN_PASSWORD = dotenv.get("ADMIN_PASSWORD");
 	 private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
-	 private static final String ADMIN_PASSWORD = "admin123";
+	// private static final String ADMIN_PASSWORD = "admin123";
 	 private static final String ENTER_CHOICE_PROMPT = "Enter your choice: ";
 	 private static final String MINUTES_SUFFIX = " minutes";
 	 private static final String INVALID_SELECTION_MSG = "Invalid selection.";
@@ -46,7 +50,7 @@ public class Main {
 
 	    
 	
-	    private static final String ADMIN_USERNAME = "admin";
+	   // private static final String ADMIN_USERNAME = "admin";
 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -92,6 +96,8 @@ public class Main {
     public Main() {
         initializeSystem();
         initializeAppointmentTypes();
+        authService = new AuthenticationService();
+        admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
     }
 
     //  INITIALIZATION METHODS 
