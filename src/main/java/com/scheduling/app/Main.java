@@ -11,7 +11,7 @@ import com.scheduling.observer.Observer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import io.github.cdimascio.dotenv.Dotenv;
+
 
 /**
  * Main Application Entry Point for the Appointment Scheduling System.
@@ -32,7 +32,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class Main {
 	
 	 private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
-	// private static final String ADMIN_PASSWORD = "admin123";
 	 private static final String ENTER_CHOICE_PROMPT = "Enter your choice: ";
 	 private static final String MINUTES_SUFFIX = " minutes";
 	 private static final String INVALID_SELECTION_MSG = "Invalid selection.";
@@ -41,8 +40,8 @@ public class Main {
 	 private static final String SHORT_SEPARATOR = "   --------------------------------";
 	 private static final String LIST_ITEM_PREFIX = "   - ";
 	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
-	 private static final String EMPTY_LINE_SPACING = "========================================================";
-	    // private static final String ADMIN_USERNAME = "admin";
+	 private static final String ADMIN_USERNAME = "admin";
+	   
 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -89,7 +88,7 @@ public class Main {
         initializeSystem();
         initializeAppointmentTypes();
         authService = new AuthenticationService();
-        admin = new Administrator("admin", "admin123");
+        admin = new Administrator(ADMIN_USERNAME, "admin123");
     }
 
     //  INITIALIZATION METHODS 
@@ -124,11 +123,8 @@ public class Main {
         authService = new AuthenticationService();
 
         // Create default administrator
-        admin = new Administrator("admin", "admin123");
-       /* Dotenv dotenv = Dotenv.load();
-        admin = new Administrator(
-            dotenv.get("ADMIN_USERNAME"),
-            dotenv.get("ADMIN_PASSWORD"));*/
+        admin = new Administrator(ADMIN_USERNAME, "admin123");
+       
 
         // Add sample data
         initializeSampleData();
@@ -729,7 +725,7 @@ public class Main {
 
         System.out.println("\nUS1.1 - Administrator Login");
         System.out.println(SHORT_SEPARATOR);
-        boolean loginSuccess = authService.login(admin, "admin", "admin123");
+        boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, "admin123");
 
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));
 
@@ -1053,16 +1049,7 @@ public class Main {
     //  UI HELPER METHODS 
 
     private void printWelcomeBanner() {
-       /* System.out.println();
-        System.out.println("********************************************************");
-        System.out.println("                                                        ");
-        System.out.println("       APPOINTMENT SCHEDULING SYSTEM                    ");
-        System.out.println("                                                        ");
-        System.out.println("            Phase 1 - Complete Implementation           ");
-        System.out.println("                                                        ");
-        System.out.println("    Sprints: 1, 2, 3, 4, 5                              ");
-        System.out.println("                                                        ");
-        System.out.println("********************************************************");*/
+       
     }
 
     private void printHeader(String title) {
@@ -1085,13 +1072,13 @@ public class Main {
 
     private void printGoodbyeMessage() {
         System.out.println();
-        // System.out.println(EMPTY_LINE_SPACING);
+        
         System.out.println("                                                        ");
         System.out.println("          Thank you for using our system!               ");
         System.out.println("                                                        ");
         System.out.println("              Have a wonderful day!                     ");
         System.out.println("                                                        ");
-       //  System.out.println(EMPTY_LINE_SPACING);
+      
     }
 
     //  MAIN ENTRY POINT 
