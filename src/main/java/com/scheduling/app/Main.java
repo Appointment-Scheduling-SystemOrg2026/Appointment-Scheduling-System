@@ -41,7 +41,7 @@ public class Main {
 	 private static final String LIST_ITEM_PREFIX = "   - ";
 	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
 	 private static final String ADMIN_USERNAME = "admin";
-	   
+	 private static final String EMPTY_LINE = "                                                        ";   
 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -1068,11 +1068,11 @@ public class Main {
     private void printGoodbyeMessage() {
         System.out.println();
         
-        System.out.println("                                                        ");
+        System.out.println(EMPTY_LINE);
         System.out.println("          Thank you for using our system!               ");
-        System.out.println("                                                        ");
+        System.out.println(EMPTY_LINE);
         System.out.println("              Have a wonderful day!                     ");
-        System.out.println("                                                        ");
+        System.out.println(EMPTY_LINE);
       
     }
 
