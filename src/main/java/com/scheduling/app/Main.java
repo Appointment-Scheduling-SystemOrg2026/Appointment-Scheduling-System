@@ -54,6 +54,7 @@ public class Main {
 	 private boolean inUserMenu = false;
 	 private static final String ADMIN_DASHBOARD_TITLE = "ADMIN DASHBOARD";
 	 
+	 
 	 static {
 	     ConsoleHandler handler = new ConsoleHandler();
 	     handler.setFormatter(new SimpleConsoleFormatter());
@@ -276,12 +277,12 @@ public class Main {
      */
     private void adminLoginFlow() {
         System.out.print("Username: ");
-        String username = safeReadLine().trim(); // استخدام الدالة الآمنة
+        String username = safeReadLine().trim(); 
 
         System.out.print("Password: ");
-        String password = safeReadLine().trim(); // استخدام الدالة الآمنة
-
-        if (!username.equals("admin") || !password.equals("admin123")) {
+        String password = safeReadLine().trim(); 
+        
+        if (!username.equals(ADMIN_USERNAME) || !password.equals(ADMIN_PASSWORD)) {
             System.out.println("Invalid credentials");
             return;
         }
