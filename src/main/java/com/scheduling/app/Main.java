@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.logging.*;
 
 
 /**
@@ -47,6 +48,16 @@ public class Main {
 		        Optional.ofNullable(System.getenv("ADMIN_PASSWORD"))
 		                .orElse("admin123");
 	 private static final Logger logger = Logger.getLogger(Main.class.getName());
+	 
+	
+
+	 static {
+	     ConsoleHandler handler = new ConsoleHandler();
+	     handler.setFormatter(new SimpleConsoleFormatter());
+
+	     logger.setUseParentHandlers(false);
+	     logger.addHandler(handler);
+	 }
 	 
 	 
     //  CONSTANTS 
@@ -207,36 +218,45 @@ public class Main {
 
         while (running) {
             printSeparator();
-            logger.info("║                    MAIN MENU                         ║");
+            System.out.println("║                    MAIN MENU                         ║");
             printSeparator();
-            logger.info("║  1. Administrator Login                              ║");
-            logger.info("║  2. User Mode                                        ║");
-            logger.info("║  3. System Demo (All Sprints)                        ║");
-            logger.info("║  4. View All User Stories                            ║");
-            logger.info("║  5. Exit                                             ║");
+            System.out.println("║  1. Administrator Login                              ║");
+            System.out.println("║  2. User Mode                                        ║");
+            System.out.println("║  3. System Demo (All Sprints)                        ║");
+            System.out.println("║  4. View All User Stories                            ║");
+            System.out.println("║  5. Exit                                             ║");
             printSeparator();
+
             System.out.print(ENTER_CHOICE_PROMPT);
+
             int choice = readIntInput();
+            logger.info("User selected option: " + choice);
 
             switch (choice) {
                 case 1:
+                    logger.info("Navigating to Admin Login");
                     adminLoginFlow();
                     break;
                 case 2:
+                    logger.info("Navigating to User Mode");
                     userModeFlow();
                     break;
                 case 3:
+                    logger.info("Running System Demo");
                     runSystemDemo();
                     break;
                 case 4:
+                    logger.info("Displaying User Stories");
                     displayUserStories();
                     break;
                 case 5:
+                    logger.info("Exiting system");
                     running = false;
                     printGoodbyeMessage();
                     break;
                 default:
-                	logger.warning("Invalid choice. Please try again.");
+                    logger.warning("Invalid choice entered: " + choice);
+                    System.out.println("Invalid choice. Please try again.");
             }
         }
     }
@@ -248,21 +268,24 @@ public class Main {
      */
     private void adminLoginFlow() {
         printHeader("ADMINISTRATOR LOGIN");
-       
         printSeparator();
 
-        logger.info("Username: ");
+        System.out.print("Username: ");
         String username = scanner.nextLine().trim();
 
-        logger.info("Password: ");
+        System.out.print("Password: ");
         String password = scanner.nextLine().trim();
 
+        logger.info("Admin login attempt: " + username);
+
         if (authService.login(admin, username, password)) {
-        	System.out.println("\n✅ Login successful! Welcome, Administrator " + username);
+            logger.info("Admin login successful: " + username);
+            System.out.println("\n✅ Login successful! Welcome, Administrator " + username);
             adminMenu();
         } else {
-        	System.out.println("\n❌ Login failed! Invalid credentials.");
-        	System.out.println("Hint: Use admin / admin123");
+            logger.warning("Failed login attempt for: " + username);
+            System.out.println("\n❌ Login failed! Invalid credentials.");
+            System.out.println("Hint: Use admin / admin123");
         }
     }
 
@@ -274,18 +297,20 @@ public class Main {
 
         while (loggedIn) {
             printSeparator();
-            logger.info("║              ADMINISTRATOR DASHBOARD                 ║");
+            System.out.println("║              ADMINISTRATOR DASHBOARD                 ║");
             printSeparator();
-            logger.info("║  1. View All Appointments                            ║");
-            logger.info("║  2. Send Appointment Reminders (US3.1)               ║");
-            logger.info("║  3. Modify Any Reservation (US4.2)                   ║");
-            logger.info("║  4. Cancel Any Reservation (US4.2)                   ║");
-            logger.info("║  5. System Statistics                                ║");
-            logger.info("║  6. Logout (US1.2)                                   ║");
+            System.out.println("║  1. View All Appointments                            ║");
+            System.out.println("║  2. Send Appointment Reminders (US3.1)               ║");
+            System.out.println("║  3. Modify Any Reservation (US4.2)                   ║");
+            System.out.println("║  4. Cancel Any Reservation (US4.2)                   ║");
+            System.out.println("║  5. System Statistics                                ║");
+            System.out.println("║  6. Logout (US1.2)                                   ║");
             printSeparator();
+
             System.out.print(ENTER_CHOICE_PROMPT);
 
             int choice = readIntInput();
+            logger.info("Admin selected option: " + choice);
 
             switch (choice) {
                 case 1:
@@ -305,15 +330,16 @@ public class Main {
                     break;
                 case 6:
                     authService.logout();
+                    logger.info("Admin logged out");
                     System.out.println("✅ Logged out successfully.");
                     loggedIn = false;
                     break;
                 default:
-                	logger.warning("Invalid choice.");
+                    logger.warning("Invalid admin choice: " + choice);
+                    System.out.println("Invalid choice.");
             }
         }
     }
-
    
 
     /**
@@ -344,18 +370,20 @@ public class Main {
 
         while (active) {
             printSeparator();
-            logger.info("║                    USER MENU                         ║");
+            System.out.println("║                    USER MENU                         ║");
             printSeparator();
-            logger.info("║  1. View Available Slots (US1.3)                     ║");
-            logger.info("║  2. Book Appointment (US2.1)                         ║");
-            logger.info("║  3. Modify My Appointment (US4.1)                    ║");
-            logger.info("║  4. Cancel My Appointment (US4.1)                    ║");
-            logger.info("║  5. View My Bookings                                 ║");
-            logger.info("║  6. Back to Main Menu                                ║");
+            System.out.println("║  1. View Available Slots (US1.3)                     ║");
+            System.out.println("║  2. Book Appointment (US2.1)                         ║");
+            System.out.println("║  3. Modify My Appointment (US4.1)                    ║");
+            System.out.println("║  4. Cancel My Appointment (US4.1)                    ║");
+            System.out.println("║  5. View My Bookings                                 ║");
+            System.out.println("║  6. Back to Main Menu                                ║");
             printSeparator();
+
             System.out.print(ENTER_CHOICE_PROMPT);
 
             int choice = readIntInput();
+            logger.info("User selected option: " + choice);
 
             switch (choice) {
                 case 1:
@@ -374,11 +402,13 @@ public class Main {
                     viewMyBookings();
                     break;
                 case 6:
+                    logger.info("User returned to main menu");
                     active = false;
                     System.out.println("Returning to main menu...");
                     break;
                 default:
-                	logger.warning("Invalid choice.");
+                    logger.warning("Invalid user choice: " + choice);
+                    System.out.println("Invalid choice.");
             }
         }
     }
@@ -434,11 +464,10 @@ public class Main {
         Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
 
         logger.info("\nBooking Summary:");
-        logger.info("   Type: " + selectedType.getClass().getSimpleName());
-        logger.info("   Date: " + dateTime.format(DATE_FORMAT));
-        logger.info("   Duration: " + duration + MINUTES_SUFFIX);
-        logger.info("   Participants: " + participants);
-
+        logger.info(() -> "   Type: " + selectedType.getClass().getSimpleName());
+        logger.info(() -> "   Date: " + dateTime.format(DATE_FORMAT));
+        logger.info(() -> "   Duration: " + duration + MINUTES_SUFFIX);
+        logger.info(() -> "   Participants: " + participants);
         logger.info("\nConfirm booking? (y/n): ");
         String confirm = scanner.nextLine().trim().toLowerCase();
 
@@ -447,7 +476,7 @@ public class Main {
 
             if (success) {
             	logger.info("✅ Appointment booked successfully!");
-            	logger.info("   Status: " + appointment.getStatus());
+            	logger.info(() -> "   Status: " + appointment.getStatus());
 
                 // Send confirmation notification
                 if (currentUser != null) {
@@ -479,7 +508,8 @@ public class Main {
         };
 
         for (int i = 0; i < typeNames.length; i++) {
-            System.out.printf("   [%d] %s%n", i + 1, typeNames[i]);
+            int index = i;
+            logger.info(() -> "   [" + (index + 1) + "] " + typeNames[index]);
         }
 
         System.out.print("\nSelect type (1-7): ");
@@ -491,7 +521,9 @@ public class Main {
         }
 
         AppointmentType selectedType = appointmentTypes.get(choice - 1);
-        System.out.println("✅ Selected: " + selectedType.getClass().getSimpleName());
+
+        logger.info(() -> "✅ Selected: " + selectedType.getClass().getSimpleName());
+
         return selectedType;
     }
 
@@ -1051,7 +1083,7 @@ public class Main {
     private void printWelcomeBanner() {
     	 System.out.println(HORIZONTAL_SEPARATOR);
     	    System.out.println("      APPOINTMENT SCHEDULING SYSTEM");
-    	    System.out.println("         Welcome to the system");
+    	    logger.info("Welcome to the system");
     	    System.out.println(HORIZONTAL_SEPARATOR);
        
     }
