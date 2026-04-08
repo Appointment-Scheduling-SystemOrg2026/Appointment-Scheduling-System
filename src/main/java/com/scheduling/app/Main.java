@@ -52,6 +52,7 @@ public class Main {
 	 private boolean running = true;
 	 private boolean inAdminMenu = false;
 	 private boolean inUserMenu = false;
+	 private static final String ADMIN_DASHBOARD_TITLE = "ADMIN DASHBOARD";
 	 
 	 static {
 	     ConsoleHandler handler = new ConsoleHandler();
@@ -108,46 +109,30 @@ public class Main {
     private final List<AppointmentType> appointmentTypes = new ArrayList<>();
     
     private void runMenu(String title, List<MenuItem> items) {
+        boolean stayInLoop = true; 
 
-        while (true) {
-
-            printSeparator();
-            System.out.println("║ " + title);
-            printSeparator();
-
-            for (int i = 0; i < items.size(); i++) {
-                System.out.println("║  " + (i + 1) + ". " + items.get(i).title);
-            }
+        while (stayInLoop) {
+            printMenuDisplay(title, items);
 
             System.out.print(ENTER_CHOICE_PROMPT);
-
             int choice = readIntInput();
-            
-            // التعامل مع انتهاء المدخلات (في حالة الاختبارات)
+
             if (choice == -2) {
-                running = false; // إيقاف البرنامج
-                break;
-            }
-
-            if (choice < 1 || choice > items.size()) {
+                running = false;
+                stayInLoop = false; 
+            } 
+            else if (choice < 1 || choice > items.size()) {
                 System.out.println("Invalid choice.");
-                continue;
-            }
+            } 
+            else {
+                items.get(choice - 1).action.run();
 
-            items.get(choice - 1).action.run();
-
-            // شروط الخروج من القوائم الفرعية
-            if (title.equals("ADMIN DASHBOARD") && !inAdminMenu) {
-                break;
-            }
-            
-            if (title.equals("USER MENU") && !inUserMenu) {
-                break;
-            }
-            
-            // شرط الخروج من القائمة الرئيسية
-            if (!running) {
-                break;
+                if (!running || 
+                		 (title.equals(ADMIN_DASHBOARD_TITLE) && !inAdminMenu) ||
+                    (title.equals("USER MENU") && !inUserMenu)) {
+                    
+                    stayInLoop = false; 
+                }
             }
         }
     }
@@ -282,18 +267,7 @@ public class Main {
             ));
         }
     }
-    private boolean authenticate() {
-        // التحقق من وجود مدخلات
-        if (!scanner.hasNextLine()) return false;
-        System.out.print("Username: ");
-        String username = scanner.nextLine().trim();
-
-        if (!scanner.hasNextLine()) return false;
-        System.out.print("Password: ");
-        String password = scanner.nextLine().trim();
-
-        return username.equals("admin") && password.equals("admin123");
-    }
+    
 
     //  SPRINT 1: AUTHENTICATION 
 
@@ -315,7 +289,7 @@ public class Main {
         System.out.println("Login successful");
         inAdminMenu = true;
 
-        runMenu("ADMIN DASHBOARD", List.of(
+        runMenu(ADMIN_DASHBOARD_TITLE, List.of(
             new MenuItem("View All Appointments", this::viewAllAppointments),
             new MenuItem("Send Reminders", this::sendAllReminders),
             new MenuItem("Modify Reservation", this::adminModifyReservation),
@@ -335,7 +309,7 @@ public class Main {
 
         inAdminMenu = true;
 
-        runMenu("ADMIN DASHBOARD", List.of(
+        runMenu(ADMIN_DASHBOARD_TITLE, List.of(
             new MenuItem("View All Appointments", this::viewAllAppointments),
             new MenuItem("Send Reminders", this::sendAllReminders),
             new MenuItem("Modify Reservation", this::adminModifyReservation),
@@ -356,7 +330,7 @@ public class Main {
     private void userModeFlow() {
         printHeader("USER MODE");
         System.out.print("Enter your email/username: ");
-        String username = safeReadLine().trim(); // استخدام الدالة الآمنة
+        String username = safeReadLine().trim(); 
 
         if (username.isEmpty()) {
             System.out.println("Username cannot be empty.");
@@ -373,7 +347,7 @@ public class Main {
      * Displays the user menu.
      */
     private void userMenu() {
-        inUserMenu = true; // 🔑 مهم جدًا
+        inUserMenu = true; 
         runMenu("USER MENU", List.of(
             new MenuItem("View Slots", this::viewAvailableSlots),
             new MenuItem("Book Appointment", this::bookAppointmentFlow),
@@ -1046,7 +1020,7 @@ public class Main {
     private int readIntInput() {
         try {
             if (!scanner.hasNextLine()) {
-                running = false; // إيقاف البرنامج عند انتهاء المدخلات
+                running = false; 
                 return -2;
             }
             String input = scanner.nextLine().trim();
@@ -1065,7 +1039,18 @@ public class Main {
         if (scanner.hasNextLine()) {
             return scanner.nextLine();
         }
-        return ""; // إرجاع قيمة افتراضية لتجنب العطل
+        return ""; 
+    }
+    /**
+     * تقوم بطباعة عنوان القائمة وخياراتها.
+     */
+    private void printMenuDisplay(String title, List<MenuItem> items) {
+        printSeparator();
+        System.out.println("║ " + title);
+        printSeparator();
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println("║  " + (i + 1) + ". " + items.get(i).title);
+        }
     }
 
     //  UI HELPER METHODS 
