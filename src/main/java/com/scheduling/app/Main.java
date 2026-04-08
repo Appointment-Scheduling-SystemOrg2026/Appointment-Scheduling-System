@@ -49,8 +49,10 @@ public class Main {
 		                .orElse("admin123");
 	 private static final Logger logger = Logger.getLogger(Main.class.getName());
 	 
-	
-
+	 private boolean running = true;
+	 private boolean inAdminMenu = false;
+	 private boolean inUserMenu = false;
+	 
 	 static {
 	     ConsoleHandler handler = new ConsoleHandler();
 	     handler.setFormatter(new SimpleConsoleFormatter());
@@ -59,6 +61,15 @@ public class Main {
 	     logger.addHandler(handler);
 	 }
 	 
+	 class MenuItem {
+		    String title;
+		    Runnable action;
+
+		    MenuItem(String title, Runnable action) {
+		        this.title = title;
+		        this.action = action;
+		    }
+		}
 	 
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
@@ -96,7 +107,50 @@ public class Main {
     /** List of all supported appointment types */
     private final List<AppointmentType> appointmentTypes = new ArrayList<>();
     
+    private void runMenu(String title, List<MenuItem> items) {
 
+        while (true) {
+
+            printSeparator();
+            System.out.println("║ " + title);
+            printSeparator();
+
+            for (int i = 0; i < items.size(); i++) {
+                System.out.println("║  " + (i + 1) + ". " + items.get(i).title);
+            }
+
+            System.out.print(ENTER_CHOICE_PROMPT);
+
+            int choice = readIntInput();
+            
+            // التعامل مع انتهاء المدخلات (في حالة الاختبارات)
+            if (choice == -2) {
+                running = false; // إيقاف البرنامج
+                break;
+            }
+
+            if (choice < 1 || choice > items.size()) {
+                System.out.println("Invalid choice.");
+                continue;
+            }
+
+            items.get(choice - 1).action.run();
+
+            // شروط الخروج من القوائم الفرعية
+            if (title.equals("ADMIN DASHBOARD") && !inAdminMenu) {
+                break;
+            }
+            
+            if (title.equals("USER MENU") && !inUserMenu) {
+                break;
+            }
+            
+            // شرط الخروج من القائمة الرئيسية
+            if (!running) {
+                break;
+            }
+        }
+    }
     //  CONSTRUCTOR 
 
     /**
@@ -213,52 +267,32 @@ public class Main {
      */
     public void start() {
         printWelcomeBanner();
-
-        boolean running = true;
+        running = true;
 
         while (running) {
-            printSeparator();
-            System.out.println("║                    MAIN MENU                         ║");
-            printSeparator();
-            System.out.println("║  1. Administrator Login                              ║");
-            System.out.println("║  2. User Mode                                        ║");
-            System.out.println("║  3. System Demo (All Sprints)                        ║");
-            System.out.println("║  4. View All User Stories                            ║");
-            System.out.println("║  5. Exit                                             ║");
-            printSeparator();
-
-            System.out.print(ENTER_CHOICE_PROMPT);
-
-            int choice = readIntInput();
-            logger.info("User selected option: " + choice);
-
-            switch (choice) {
-                case 1:
-                    logger.info("Navigating to Admin Login");
-                    adminLoginFlow();
-                    break;
-                case 2:
-                    logger.info("Navigating to User Mode");
-                    userModeFlow();
-                    break;
-                case 3:
-                    logger.info("Running System Demo");
-                    runSystemDemo();
-                    break;
-                case 4:
-                    logger.info("Displaying User Stories");
-                    displayUserStories();
-                    break;
-                case 5:
-                    logger.info("Exiting system");
-                    running = false;
+            runMenu("MAIN MENU", List.of(
+                new MenuItem("Administrator Login", this::adminLoginFlow), // Correct
+                new MenuItem("User Mode", this::userModeFlow),             // Correct
+                new MenuItem("System Demo", this::runSystemDemo),
+                new MenuItem("View User Stories", this::displayUserStories),
+                new MenuItem("Exit", () -> {
                     printGoodbyeMessage();
-                    break;
-                default:
-                    logger.warning("Invalid choice entered: " + choice);
-                    System.out.println("Invalid choice. Please try again.");
-            }
+                    running = false;
+                })
+            ));
         }
+    }
+    private boolean authenticate() {
+        // التحقق من وجود مدخلات
+        if (!scanner.hasNextLine()) return false;
+        System.out.print("Username: ");
+        String username = scanner.nextLine().trim();
+
+        if (!scanner.hasNextLine()) return false;
+        System.out.print("Password: ");
+        String password = scanner.nextLine().trim();
+
+        return username.equals("admin") && password.equals("admin123");
     }
 
     //  SPRINT 1: AUTHENTICATION 
@@ -267,78 +301,52 @@ public class Main {
      * Handles administrator login flow (US1.1).
      */
     private void adminLoginFlow() {
-        printHeader("ADMINISTRATOR LOGIN");
-        printSeparator();
-
         System.out.print("Username: ");
-        String username = scanner.nextLine().trim();
+        String username = safeReadLine().trim(); // استخدام الدالة الآمنة
 
         System.out.print("Password: ");
-        String password = scanner.nextLine().trim();
+        String password = safeReadLine().trim(); // استخدام الدالة الآمنة
 
-        logger.info("Admin login attempt: " + username);
-
-        if (authService.login(admin, username, password)) {
-            logger.info("Admin login successful: " + username);
-            System.out.println("\n✅ Login successful! Welcome, Administrator " + username);
-            adminMenu();
-        } else {
-            logger.warning("Failed login attempt for: " + username);
-            System.out.println("\n❌ Login failed! Invalid credentials.");
-            System.out.println("Hint: Use admin / admin123");
+        if (!username.equals("admin") || !password.equals("admin123")) {
+            System.out.println("Invalid credentials");
+            return;
         }
+
+        System.out.println("Login successful");
+        inAdminMenu = true;
+
+        runMenu("ADMIN DASHBOARD", List.of(
+            new MenuItem("View All Appointments", this::viewAllAppointments),
+            new MenuItem("Send Reminders", this::sendAllReminders),
+            new MenuItem("Modify Reservation", this::adminModifyReservation),
+            new MenuItem("Cancel Reservation", this::adminCancelReservation),
+            new MenuItem("Statistics", this::displayStatistics),
+            new MenuItem("Logout", () -> {
+                System.out.println("Logged out.");
+                inAdminMenu = false;
+            })
+        ));
     }
 
     /**
      * Displays the administrator menu after successful login.
      */
     private void adminMenu() {
-        boolean loggedIn = true;
 
-        while (loggedIn) {
-            printSeparator();
-            System.out.println("║              ADMINISTRATOR DASHBOARD                 ║");
-            printSeparator();
-            System.out.println("║  1. View All Appointments                            ║");
-            System.out.println("║  2. Send Appointment Reminders (US3.1)               ║");
-            System.out.println("║  3. Modify Any Reservation (US4.2)                   ║");
-            System.out.println("║  4. Cancel Any Reservation (US4.2)                   ║");
-            System.out.println("║  5. System Statistics                                ║");
-            System.out.println("║  6. Logout (US1.2)                                   ║");
-            printSeparator();
+        inAdminMenu = true;
 
-            System.out.print(ENTER_CHOICE_PROMPT);
-
-            int choice = readIntInput();
-            logger.info("Admin selected option: " + choice);
-
-            switch (choice) {
-                case 1:
-                    viewAllAppointments();
-                    break;
-                case 2:
-                    sendAllReminders();
-                    break;
-                case 3:
-                    adminModifyReservation();
-                    break;
-                case 4:
-                    adminCancelReservation();
-                    break;
-                case 5:
-                    displayStatistics();
-                    break;
-                case 6:
-                    authService.logout();
-                    logger.info("Admin logged out");
-                    System.out.println("✅ Logged out successfully.");
-                    loggedIn = false;
-                    break;
-                default:
-                    logger.warning("Invalid admin choice: " + choice);
-                    System.out.println("Invalid choice.");
-            }
-        }
+        runMenu("ADMIN DASHBOARD", List.of(
+            new MenuItem("View All Appointments", this::viewAllAppointments),
+            new MenuItem("Send Reminders", this::sendAllReminders),
+            new MenuItem("Modify Reservation", this::adminModifyReservation),
+            new MenuItem("Cancel Reservation", this::adminCancelReservation),
+            new MenuItem("Statistics", this::displayStatistics),
+            new MenuItem("Logout", () -> {
+                authService.logout();
+                System.out.println("Logged out.");
+                inAdminMenu = false;
+            })
+        ));
     }
    
 
@@ -348,7 +356,7 @@ public class Main {
     private void userModeFlow() {
         printHeader("USER MODE");
         System.out.print("Enter your email/username: ");
-        String username = scanner.nextLine().trim();
+        String username = safeReadLine().trim(); // استخدام الدالة الآمنة
 
         if (username.isEmpty()) {
             System.out.println("Username cannot be empty.");
@@ -356,7 +364,6 @@ public class Main {
         }
 
         currentUser = new User(username, "user123");
-       
         System.out.println("✅ Welcome, " + username + "!");
 
         userMenu();
@@ -366,51 +373,18 @@ public class Main {
      * Displays the user menu.
      */
     private void userMenu() {
-        boolean active = true;
-
-        while (active) {
-            printSeparator();
-            System.out.println("║                    USER MENU                         ║");
-            printSeparator();
-            System.out.println("║  1. View Available Slots (US1.3)                     ║");
-            System.out.println("║  2. Book Appointment (US2.1)                         ║");
-            System.out.println("║  3. Modify My Appointment (US4.1)                    ║");
-            System.out.println("║  4. Cancel My Appointment (US4.1)                    ║");
-            System.out.println("║  5. View My Bookings                                 ║");
-            System.out.println("║  6. Back to Main Menu                                ║");
-            printSeparator();
-
-            System.out.print(ENTER_CHOICE_PROMPT);
-
-            int choice = readIntInput();
-            logger.info("User selected option: " + choice);
-
-            switch (choice) {
-                case 1:
-                    viewAvailableSlots();
-                    break;
-                case 2:
-                    bookAppointmentFlow();
-                    break;
-                case 3:
-                    modifyAppointmentFlow();
-                    break;
-                case 4:
-                    cancelAppointmentFlow();
-                    break;
-                case 5:
-                    viewMyBookings();
-                    break;
-                case 6:
-                    logger.info("User returned to main menu");
-                    active = false;
-                    System.out.println("Returning to main menu...");
-                    break;
-                default:
-                    logger.warning("Invalid user choice: " + choice);
-                    System.out.println("Invalid choice.");
-            }
-        }
+        inUserMenu = true; // 🔑 مهم جدًا
+        runMenu("USER MENU", List.of(
+            new MenuItem("View Slots", this::viewAvailableSlots),
+            new MenuItem("Book Appointment", this::bookAppointmentFlow),
+            new MenuItem("Modify Appointment", this::modifyAppointmentFlow),
+            new MenuItem("Cancel Appointment", this::cancelAppointmentFlow),
+            new MenuItem("View My Bookings", this::viewMyBookings),
+            new MenuItem("Back", () -> {
+                System.out.println("Back to main menu.");
+                inUserMenu = false; // هذا يكسر loop runMenu
+            })
+        ));
     }
 
     //  SPRINT 1: VIEW SLOTS 
@@ -469,7 +443,7 @@ public class Main {
         logger.info(() -> "   Duration: " + duration + MINUTES_SUFFIX);
         logger.info(() -> "   Participants: " + participants);
         logger.info("\nConfirm booking? (y/n): ");
-        String confirm = scanner.nextLine().trim().toLowerCase();
+        String confirm = safeReadLine().trim().toLowerCase();
 
         if (confirm.equals("y") || confirm.equals("yes")) {
             boolean success = appointmentService.book(appointment);
@@ -1071,11 +1045,27 @@ public class Main {
      */
     private int readIntInput() {
         try {
+            if (!scanner.hasNextLine()) {
+                running = false; // إيقاف البرنامج عند انتهاء المدخلات
+                return -2;
+            }
             String input = scanner.nextLine().trim();
+            if (input.isEmpty()) return -1;
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+    
+    /**
+     * Reads a line safely, returning empty string if no input exists.
+     * Prevents NoSuchElementException in tests.
+     */
+    private String safeReadLine() {
+        if (scanner.hasNextLine()) {
+            return scanner.nextLine();
+        }
+        return ""; // إرجاع قيمة افتراضية لتجنب العطل
     }
 
     //  UI HELPER METHODS 
