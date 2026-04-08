@@ -19,13 +19,14 @@ import java.util.logging.*;
  * Main Application Entry Point for the Appointment Scheduling System.
  *
  * <p>This class demonstrates all implemented User Stories across 5 Sprints:</p>
+ * /**
  * <ul>
- *   <li><b>Sprint 1:</b> Core Scheduling & Authentication (US1.1-US1.3)</li>
- *   <li><b>Sprint 2:</b> Booking & Business Rules (US2.1-US2.3)</li>
- *   <li><b>Sprint 3:</b> Notifications & Mocking (US3.1)</li>
- *   <li><b>Sprint 4:</b> Advanced Management Rules (US4.1-US4.2)</li>
- *   <li><b>Sprint 5:</b> Appointment Types & Polymorphism (US5.1-US5.2)</li>
+ *   <li><b>Sprint 1:</b> Core Scheduling &amp; Authentication (US1.1-US1.3)</li>
+ *   <li><b>Sprint 2:</b> Booking &amp; Business Rules (US2.1-US2.3)</li>
+ *   <li><b>Sprint 3:</b> Notifications &amp; Mocking (US3.1)</li>
+ *   <li><b>Sprint 5:</b> Appointment Types &amp; Polymorphism (US5.1-US5.2)</li>
  * </ul>
+ *
  *
  * @author Tasneem
  * @version 2.0
@@ -303,28 +304,7 @@ public class Main {
         ));
     }
 
-    /**
-     * Displays the administrator menu after successful login.
-     */
-    private void adminMenu() {
-
-        inAdminMenu = true;
-
-        runMenu(ADMIN_DASHBOARD_TITLE, List.of(
-            new MenuItem("View All Appointments", this::viewAllAppointments),
-            new MenuItem("Send Reminders", this::sendAllReminders),
-            new MenuItem("Modify Reservation", this::adminModifyReservation),
-            new MenuItem("Cancel Reservation", this::adminCancelReservation),
-            new MenuItem("Statistics", this::displayStatistics),
-            new MenuItem("Logout", () -> {
-                authService.logout();
-                System.out.println("Logged out.");
-                inAdminMenu = false;
-            })
-        ));
-    }
-   
-
+    
     /**
      * Handles user mode flow.
      */
