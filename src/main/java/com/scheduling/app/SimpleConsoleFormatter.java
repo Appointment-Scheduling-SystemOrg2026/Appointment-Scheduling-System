@@ -20,8 +20,8 @@ public class SimpleConsoleFormatter extends Formatter {
      * @param record The log record to be formatted.
      * @return A string representing the log message.
      */
-    @Override
-    public String format(LogRecord record) {
-        return record.getMessage() + System.lineSeparator();
-    }
+	@Override
+	public String format(LogRecord logRecord) {
+	    return logRecord.getMessage() + System.lineSeparator();
+	}
 }

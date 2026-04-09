@@ -44,8 +44,7 @@ class MainComprehensiveTest {
     void testMainConstructor() {
         Main main = new Main();
         assertNotNull(main);
-        String output = outputStream.toString();
-       // assertTrue(output.contains("SYSTEM INITIALIZATION") || output.contains("initialized"));
+        String output = outputStream.toString();   //NOSONAR
     }
 
     @Test

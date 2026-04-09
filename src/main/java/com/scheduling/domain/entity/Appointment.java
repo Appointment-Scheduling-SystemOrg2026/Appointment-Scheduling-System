@@ -204,7 +204,6 @@ public class Appointment {
      * @return A BooleanSupplier representing whether the appointment is in the future.
      */
     public BooleanSupplier isFuture() {
-        // TODO: Implement method to check if the appointment is scheduled for a future date
         return () -> dateTime.isAfter(LocalDateTime.now());
     }
 }

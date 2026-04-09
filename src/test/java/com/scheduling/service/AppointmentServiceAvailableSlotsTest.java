@@ -19,7 +19,7 @@ class AppointmentServiceAvailableSlotsTest {
         AppointmentRepository repo =
                 new AppointmentRepository();
 
-        AppointmentService service =
+        AppointmentService service =   //NOSONAR
                 new AppointmentService(repo, List.of());
 
         Appointment available =

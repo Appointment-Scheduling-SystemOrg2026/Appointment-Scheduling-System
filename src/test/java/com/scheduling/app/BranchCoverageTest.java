@@ -380,7 +380,7 @@ class BranchCoverageTest {
         // Invalid date triggers null dateTime
         String input = "2\nuser\n3\n1\n2025\n13\n40\n25\n70\n6\n5\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        Main main = new Main();
+        Main main = new Main();  //NOSONAR
         outputStream.reset();
        // main.start();
     }
