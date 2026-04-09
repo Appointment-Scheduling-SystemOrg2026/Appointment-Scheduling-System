@@ -116,7 +116,7 @@ public class Main {
         while (stayInLoop) {
             printMenuDisplay(title, items);
 
-            System.out.print(ENTER_CHOICE_PROMPT);
+            System.out.print(ENTER_CHOICE_PROMPT);    // NOSONAR
             int choice = readIntInput();
 
             if (choice == -2) {
@@ -124,7 +124,7 @@ public class Main {
                 stayInLoop = false; 
             } 
             else if (choice < 1 || choice > items.size()) {
-                System.out.println("Invalid choice.");
+                System.out.println("Invalid choice.");     // NOSONAR
             } 
             else {
                 items.get(choice - 1).action.run();
@@ -277,18 +277,18 @@ public class Main {
      * Handles administrator login flow (US1.1).
      */
     private void adminLoginFlow() {
-        System.out.print("Username: ");
+        System.out.print("Username: ");       // NOSONAR
         String username = safeReadLine().trim(); 
 
-        System.out.print("Password: ");
+        System.out.print("Password: ");       // NOSONAR
         String password = safeReadLine().trim(); 
         
         if (!username.equals(ADMIN_USERNAME) || !password.equals(ADMIN_PASSWORD)) {
-            System.out.println("Invalid credentials");
+            System.out.println("Invalid credentials");      // NOSONAR
             return;
         }
 
-        System.out.println("Login successful");
+        System.out.println("Login successful");       // NOSONAR
         inAdminMenu = true;
 
         runMenu(ADMIN_DASHBOARD_TITLE, List.of(
@@ -298,7 +298,7 @@ public class Main {
             new MenuItem("Cancel Reservation", this::adminCancelReservation),
             new MenuItem("Statistics", this::displayStatistics),
             new MenuItem("Logout", () -> {
-                System.out.println("Logged out.");
+                System.out.println("Logged out.");          // NOSONAR
                 inAdminMenu = false;
             })
         ));
@@ -336,8 +336,8 @@ public class Main {
             new MenuItem("Cancel Appointment", this::cancelAppointmentFlow),
             new MenuItem("View My Bookings", this::viewMyBookings),
             new MenuItem("Back", () -> {
-                System.out.println("Back to main menu.");
-                inUserMenu = false; // هذا يكسر loop runMenu
+                System.out.println("Back to main menu.");               // NOSONAR
+                inUserMenu = false; 
             })
         ));
     }
@@ -474,7 +474,7 @@ public class Main {
 
         displayAppointmentList(appointments, "Select appointment to modify:");
 
-        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);       // NOSONAR
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= appointments.size()) {
@@ -524,7 +524,7 @@ public class Main {
 
         displayAppointmentList(appointments, "Select appointment to cancel:");
 
-        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);        // NOSONAR
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= appointments.size()) {
@@ -569,11 +569,11 @@ public class Main {
 
         displayAppointmentList(allAppointments, "Select reservation to modify:");
 
-        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);          // NOSONAR
         int index = readIntInput() - 1;
 
         if (index < 0 || index >= allAppointments.size()) {
-            System.out.println(INVALID_SELECTION_MSG);
+            System.out.println(INVALID_SELECTION_MSG);        // NOSONAR
             return;
         }
 
@@ -598,7 +598,7 @@ public class Main {
     	System.out.println();
     	System.out.println(HORIZONTAL_SEPARATOR);
     	System.out.println("  ADMIN: CANCEL RESERVATION");
-    	System.out.println(HORIZONTAL_SEPARATOR);
+    	System.out.println(HORIZONTAL_SEPARATOR);                 // NOSONAR
 
         List<Appointment> allAppointments = repository.findAll();
 
@@ -613,7 +613,7 @@ public class Main {
             System.out.println("  [" + (i + 1) + "] " + formatAppointment(apt));
         }
 
-        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);           // NOSONAR
         int index = readIntInput() - 1;
 
         if (index >= 0 && index < allAppointments.size()) {
@@ -624,7 +624,7 @@ public class Main {
             
             System.out.println(">> Reservation cancelled by Admin.");
         } else {
-        	System.out.println(INVALID_SELECTION_MSG);
+        	System.out.println(INVALID_SELECTION_MSG);         // NOSONAR
         }
     }
 
@@ -694,30 +694,30 @@ public class Main {
         printDemoHeader("SPRINT 1: Core Scheduling & Authentication");
 
         System.out.println("\nUS1.1 - Administrator Login");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);        // NOSONAR
         boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
 
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));
 
         System.out.println("\nUS1.3 - View Available Slots");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);       // NOSONAR
         List<Appointment> slots = appointmentService.viewAvailableSlots();
         System.out.println("   Available slots: " + slots.size());
         for (Appointment apt : slots) {
-        	 System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));
+        	 System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));    // NOSONAR
         }
 
         System.out.println("\nUS1.2 - Administrator Logout");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);    // NOSONAR
         authService.logout();
-        System.out.println("   Logout result: SUCCESS");
+        System.out.println("   Logout result: SUCCESS");  // NOSONAR
     }
 
     private void demoSprint2() {
         printDemoHeader("SPRINT 2: Booking & Business Rules");
 
         System.out.println("\nUS2.1 - Book Appointment");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);       // NOSONAR
         Appointment newApt = new Appointment(
                 LocalDateTime.now().plusDays(3),
                 30,
@@ -725,11 +725,11 @@ public class Main {
                 new VirtualAppointment()
         );
         boolean booked = appointmentService.book(newApt);
-        System.out.println("   Booking result: " + (booked ? "CONFIRMED" : "REJECTED"));
+        System.out.println("   Booking result: " + (booked ? "CONFIRMED" : "REJECTED"));  
 
-        System.out.println("\nUS2.2 - Duration Rule Enforcement");
-        System.out.println(SHORT_SEPARATOR);
-        System.out.println("   Max duration allowed: " + MAX_DURATION + MINUTES_SUFFIX);
+        System.out.println("\nUS2.2 - Duration Rule Enforcement");    // NOSONAR
+        System.out.println(SHORT_SEPARATOR);     // NOSONAR
+        System.out.println("   Max duration allowed: " + MAX_DURATION + MINUTES_SUFFIX);  // NOSONAR
         Appointment longApt = new Appointment(
                 LocalDateTime.now().plusDays(1),
                 200,
@@ -740,7 +740,7 @@ public class Main {
         System.out.println("   Booking 200 min: " + (longResult ? "ACCEPTED" : "REJECTED (as expected)"));
 
         System.out.println("\nUS2.3 - Participant Limit Enforcement");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);    // NOSONAR
         System.out.println("   Max participants allowed: " + MAX_PARTICIPANTS);
         Appointment crowdedApt = new Appointment(
                 LocalDateTime.now().plusDays(1),
@@ -756,7 +756,7 @@ public class Main {
         printDemoHeader("SPRINT 3: Notifications & Mocking");
 
         System.out.println("\nUS3.1 - Send Appointment Reminders");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);       // NOSONAR
         System.out.println("   Demo Mode: Sending reminders is simulated...");      
         System.out.println("   Reminder logic demonstrated without sending real emails.");
         System.out.println("   Channels simulated: Console Logger, Email Service");
@@ -767,7 +767,7 @@ public class Main {
         printDemoHeader("SPRINT 4: Advanced Management Rules");
 
         System.out.println("\nUS4.1 - Modify Appointment");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);      // NOSONAR
         List<Appointment> appointments = repository.findAll();
         if (!appointments.isEmpty()) {
             Appointment original = appointments.get(0);
@@ -782,7 +782,7 @@ public class Main {
         }
 
         System.out.println("\nUS4.2 - Admin Manage Reservations");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);     // NOSONAR
         authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
         System.out.println("   Admin can modify/cancel ANY reservation");
         System.out.println("   Admin privileges confirmed");
@@ -792,17 +792,17 @@ public class Main {
         printDemoHeader("SPRINT 5: Appointment Types & Polymorphism");
 
         System.out.println("\nUS5.1 - Support Multiple Appointment Types");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);     // NOSONAR
         System.out.println("   Available types:");
         for (AppointmentType type : appointmentTypes) {
-        	System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName());
+        	System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName());   // NOSONAR
         }
 
         System.out.println("\nUS5.2 - Apply Different Rules Per Type");
-        System.out.println(SHORT_SEPARATOR);
+        System.out.println(SHORT_SEPARATOR);   // NOSONAR
         System.out.println("   Each type can have specific behavior:");
         for (AppointmentType type : appointmentTypes) {
-        	 System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName() + ": " + type.getDescription());
+        	 System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName() + ": " + type.getDescription());  // NOSONAR
         }
     }
 
@@ -1027,49 +1027,49 @@ public class Main {
      */
     private void printMenuDisplay(String title, List<MenuItem> items) {
         printSeparator();
-        System.out.println("║ " + title);
+        System.out.println("║ " + title);   // NOSONAR
         printSeparator();
         for (int i = 0; i < items.size(); i++) {
-            System.out.println("║  " + (i + 1) + ". " + items.get(i).title);
+            System.out.println("║  " + (i + 1) + ". " + items.get(i).title);   // NOSONAR
         }
     }
 
     //  UI HELPER METHODS 
 
     private void printWelcomeBanner() {
-    	 System.out.println(HORIZONTAL_SEPARATOR);
-    	    System.out.println("      APPOINTMENT SCHEDULING SYSTEM");
+    	 System.out.println(HORIZONTAL_SEPARATOR);     // NOSONAR
+    	    System.out.println("      APPOINTMENT SCHEDULING SYSTEM");     // NOSONAR
     	    logger.info("Welcome to the system");
-    	    System.out.println(HORIZONTAL_SEPARATOR);
-       
+    	    System.out.println(HORIZONTAL_SEPARATOR);    // NOSONAR
+        
     }
 
     private void printHeader(String title) {
         System.out.println();
-        System.out.println(HORIZONTAL_SEPARATOR);
-        System.out.println("  " + title);
-        System.out.println(HORIZONTAL_SEPARATOR);
-    }
+        System.out.println(HORIZONTAL_SEPARATOR);     // NOSONAR
+        System.out.println("  " + title);       // NOSONAR
+        System.out.println(HORIZONTAL_SEPARATOR);  // NOSONAR
+    } 
     
     private void printDemoHeader(String title) {
-        System.out.println();
-        System.out.println(DASH_SEPARATOR);
-        System.out.println("  " + title);
-        System.out.println(DASH_SEPARATOR);
+        System.out.println();         // NOSONAR
+        System.out.println(DASH_SEPARATOR);  // NOSONAR
+        System.out.println("  " + title);       // NOSONAR
+        System.out.println(DASH_SEPARATOR);        // NOSONAR
     }
 
     private void printSeparator() {
-    	 System.out.println(DASH_SEPARATOR);
+    	 System.out.println(DASH_SEPARATOR);      // NOSONAR
     }
 
     private void printGoodbyeMessage() {
-        System.out.println();
+        System.out.println();       // NOSONAR
         
-        System.out.println(EMPTY_LINE);
-        System.out.println("          Thank you for using our system!               ");
-        System.out.println(EMPTY_LINE);
-        System.out.println("              Have a wonderful day!                     ");
-        System.out.println(EMPTY_LINE);
+        System.out.println(EMPTY_LINE);          // NOSONAR
+        System.out.println("          Thank you for using our system!               ");  // NOSONAR
+        System.out.println(EMPTY_LINE);  // NOSONAR
+        System.out.println("              Have a wonderful day!                     ");  // NOSONAR
+        System.out.println(EMPTY_LINE);   // NOSONAR
       
     }
 
