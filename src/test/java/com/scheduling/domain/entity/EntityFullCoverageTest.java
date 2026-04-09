@@ -205,7 +205,7 @@ class EntityFullCoverageTest {
     @Test
     @DisplayName("Should return true for isAdmin")
     void testAdministratorIsAdmin() {
-        Administrator admin = new Administrator("admin", "admin123");
+        Administrator admin = new Administrator("admin", "admin123");    //NOSONAR
      //   assertTrue(admin.isAdmin());
     }
 

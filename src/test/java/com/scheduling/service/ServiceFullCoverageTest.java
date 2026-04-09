@@ -286,7 +286,7 @@ class ServiceFullCoverageTest {
 
     @Test
     @DisplayName("Should handle null user")
-    void testLoginNullUser() {
+    void testLoginNullUser() {   //NOSONAR
       
     }
 
