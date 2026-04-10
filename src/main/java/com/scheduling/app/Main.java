@@ -8,10 +8,12 @@ import com.scheduling.strategy.*;
 import com.scheduling.observer.*;
 import com.scheduling.observer.Observer;
 
+import java.io.ObjectInputFilter.Status;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.logging.*;
 
 
@@ -350,18 +352,20 @@ public class Main {
     private void viewAvailableSlots() {
         printHeader("AVAILABLE APPOINTMENT SLOTS (US1.3)");
 
-        List<Appointment> availableSlots = appointmentService.viewAvailableSlots();
-
+        List<Appointment> availableSlots = appointmentService.viewAvailableSlots().stream()
+                .filter(apt -> apt.getStatus() == AppointmentStatus.AVAILABLE) 
+                .collect(Collectors.toList());
+                
         if (availableSlots.isEmpty()) {
-            System.out.println("No available slots at the moment.");                                      // NOSONAR
+            System.out.println("No available slots at the moment.");
             return;
         }
 
-        System.out.println("Found " + availableSlots.size() + " available slot(s):\n");                   // NOSONAR
+        System.out.println("Found " + availableSlots.size() + " available slot(s):\n");
 
         for (int i = 0; i < availableSlots.size(); i++) {
             Appointment apt = availableSlots.get(i);
-            System.out.printf("  [%d] %s%n", i + 1, formatAppointment(apt));                                 // NOSONAR
+            System.out.printf("  [%d] %s%n", i + 1, formatAppointment(apt));
         }
     }
 
@@ -404,6 +408,7 @@ public class Main {
             boolean success = appointmentService.book(appointment);
 
             if (success) {
+            	appointment.setBookedBy(currentUser.getUsername());
             	logger.info("✅ Appointment booked successfully!");
             	logger.info(() -> "   Status: " + appointment.getStatus());
 
@@ -881,15 +886,19 @@ public class Main {
      */
     private void viewMyBookings() {
         printHeader("MY BOOKINGS");
-        List<Appointment> future = getFutureAppointments();
+        
+        // نجلب كل المواعيد ونقوم بتصفيتها
+        List<Appointment> myAppointments = repository.findAll().stream()
+            .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy()))
+            .collect(Collectors.toList());
 
-        if (future.isEmpty()) {
-            System.out.println("You have no upcoming appointments.");                                     // NOSONAR
+        if (myAppointments.isEmpty()) {
+            System.out.println("You have no bookings yet.");
             return;
         }
 
-        for (Appointment apt : future) {
-            System.out.println("   " + formatAppointment(apt));                                         // NOSONAR
+        for (int i = 0; i < myAppointments.size(); i++) {
+            System.out.printf("  [%d] %s%n", i + 1, formatAppointment(myAppointments.get(i)));
         }
     }
 
@@ -897,15 +906,11 @@ public class Main {
      * Gets future appointments only.
      */
     private List<Appointment> getFutureAppointments() {
-        List<Appointment> future = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-
-        for (Appointment apt : repository.findAll()) {
-            if (apt.getDateTime().isAfter(now)) {
-                future.add(apt);
-            }
-        }
-        return future;
+        return repository.findAll().stream()
+            .filter(apt -> apt.getDateTime().isAfter(LocalDateTime.now()))
+            
+            .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy())) 
+            .collect(Collectors.toList());
     }
 
     /**

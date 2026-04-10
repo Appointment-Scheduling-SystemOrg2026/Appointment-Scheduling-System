@@ -33,6 +33,7 @@ public class Appointment {
     
     /** The type of the appointment (e.g., meeting, consultation, etc.). */
     private AppointmentType type;
+    private String bookedBy;
     
 
     /**
@@ -205,5 +206,12 @@ public class Appointment {
      */
     public BooleanSupplier isFuture() {
         return () -> dateTime.isAfter(LocalDateTime.now());
+    }
+    public String getBookedBy() {
+        return bookedBy;
+    }
+
+    public void setBookedBy(String bookedBy) {
+        this.bookedBy = bookedBy;
     }
 }
