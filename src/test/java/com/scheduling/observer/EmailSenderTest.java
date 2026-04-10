@@ -1,32 +1,34 @@
 package com.scheduling.observer;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class EmailSenderTest {
 
-    private final EmailSender sender =
-            new EmailSender("test@gmail.com", "password");
-
     @Test
-    void constructor_shouldCreateInstance() {
-        EmailSender localSender =
-                new EmailSender("x@gmail.com", "123");
-
-        assertNotNull(localSender);
+    void testConstructor() {
+        EmailSender sender = new EmailSender("test@example.com", "password");
+        assertNotNull(sender);
     }
 
     @Test
-    void sendEmail_shouldReturnBoolean_withoutCrashing() {
+    void testSendEmail_Failure_InvalidCredentials() {
         
-        boolean result = sender.sendEmail(
-                "receiver@gmail.com",
-                "Test Subject",
-                "Test Body"
-        );
+        EmailSender sender = new EmailSender("invalid_user@gmail.com", "wrong_password");
 
+        boolean result = sender.sendEmail("recipient@example.com", "Test Subject", "Test Body");
+
+        assertFalse(result, "Email sending should fail with invalid credentials");
+    }
+    
+    @Test
+    void testSendEmail_Failure_NoNetwork() {
         
-        assertTrue(result == true || result == false);
+        EmailSender sender = new EmailSender("test@gmail.com", "password");
+        
+        
+        boolean result = sender.sendEmail("to@example.com", "Subject", "Body");
+        
+        assertFalse(result);
     }
 }
