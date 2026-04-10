@@ -132,9 +132,8 @@ public class AppointmentService {
      * @param string The ID of the appointment to find.
      * @return the appointment if found, null otherwise.
      */
-    public Appointment findById(String string) {
-        // TODO Auto-generated method stub
-        return null;
+    public Appointment findById(String id) {
+        return repository.findById(id);
     }
 
     /**
@@ -145,8 +144,8 @@ public class AppointmentService {
      * @return true if the appointment was deleted, false otherwise.
      */
     public boolean deleteAppointment(Appointment apt) {
-        // TODO Auto-generated method stub
-        return false;
+        if (apt == null) return false;
+        return repository.delete(apt);
     }
 
     /**
@@ -156,7 +155,6 @@ public class AppointmentService {
      * @return a list of all appointments.
      */
     public List<Appointment> findAllAppointments() {
-        // TODO Auto-generated method stub
-        return null;
+        return repository.findAll();
     }
 }
