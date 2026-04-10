@@ -30,8 +30,9 @@ public class GroupAppointment implements AppointmentType {
         return 10;
     }
 
-	public void getTypeName() {
-		// TODO Auto-generated method stub
-		
-	}
+    public String getTypeName() {
+        return "Group";
+    }
+
+	
 }
