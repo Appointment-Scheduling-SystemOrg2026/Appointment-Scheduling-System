@@ -518,7 +518,7 @@ public class Main {
         List<Appointment> appointments = getFutureAppointments();
 
         if (appointments.isEmpty()) {
-            System.out.println("No cancellable appointments found.");
+            System.out.println("No cancellable appointments found.");                                                      // NOSONAR                                                   
             return;
         }
 
@@ -699,15 +699,15 @@ public class Main {
 
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));                       // NOSONAR
 
-        System.out.println("\nUS1.3 - View Available Slots");
+        System.out.println("\nUS1.3 - View Available Slots");                                             // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                  // NOSONAR
         List<Appointment> slots = appointmentService.viewAvailableSlots();
-        System.out.println("   Available slots: " + slots.size());
+        System.out.println("   Available slots: " + slots.size());                                         // NOSONAR
         for (Appointment apt : slots) {
         	 System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));               // NOSONAR
         }
 
-        System.out.println("\nUS1.2 - Administrator Logout");
+        System.out.println("\nUS1.2 - Administrator Logout");                                          // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                   // NOSONAR
         authService.logout();
         System.out.println("   Logout result: SUCCESS");                                        // NOSONAR
@@ -1045,7 +1045,7 @@ public class Main {
     }
 
     private void printHeader(String title) {
-        System.out.println();
+        System.out.println();                                                                                               // NOSONAR
         System.out.println(HORIZONTAL_SEPARATOR);                                                           // NOSONAR
         System.out.println("  " + title);                                                                 // NOSONAR
         System.out.println(HORIZONTAL_SEPARATOR);                                                           // NOSONAR

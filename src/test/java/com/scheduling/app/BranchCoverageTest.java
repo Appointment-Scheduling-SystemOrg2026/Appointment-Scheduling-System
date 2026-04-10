@@ -1,16 +1,11 @@
 package com.scheduling.app;
 
-import com.scheduling.domain.entity.*;
-import com.scheduling.domain.type.*;
-import com.scheduling.repository.AppointmentRepository;
-import com.scheduling.service.*;
-import com.scheduling.strategy.*;
 import com.scheduling.observer.*;
-
 import org.junit.jupiter.api.*;
 import java.io.*;
-import java.time.LocalDateTime;
-import java.util.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,73 +34,26 @@ class BranchCoverageTest {
     }
 
     
-
-    @Test
-    @DisplayName("Main menu - choice 1 admin login")
-    void testMainMenuChoice1() {
-        String input = "1\nadmin\nadmin123\n6\n5\n";
+    @ParameterizedTest(name = "Main menu test {index}")
+    @ValueSource(strings = {
+            "1\nadmin\nadmin123\n6\n5\n",
+            "2\ntestuser\n6\n5\n",
+            "3\n\n\n5\n",
+            "4\n5\n",
+            "5\n",
+            "999\n5\n"   // default case
+    })
+    void testMainMenuParameterized(String input) {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         Main main = new Main();
         outputStream.reset();
         main.start();
-        assertTrue(outputStream.toString().length() > 0);
-    }
 
-    @Test
-    @DisplayName("Main menu - choice 2 user mode")
-    void testMainMenuChoice2() {
-        String input = "2\ntestuser\n6\n5\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        Main main = new Main();
-        outputStream.reset();
-        main.start();
-        assertTrue(outputStream.toString().length() > 0);
-    }
-
-    @Test
-    @DisplayName("Main menu - choice 3 system demo")
-    void testMainMenuChoice3() {
-        String input = "3\n\n\n5\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        Main main = new Main();
-        outputStream.reset();
-        main.start();
-        assertTrue(outputStream.toString().length() > 0);
-    }
-
-    @Test
-    @DisplayName("Main menu - choice 4 user stories")
-    void testMainMenuChoice4() {
-        String input = "4\n5\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        Main main = new Main();
-        outputStream.reset();
-        main.start();
-        assertTrue(outputStream.toString().length() > 0);
-    }
-
-    @Test
-    @DisplayName("Main menu - choice 5 exit")
-    void testMainMenuChoice5() {
-        String input = "5\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        Main main = new Main();
-        outputStream.reset();
-        main.start();
-        assertTrue(outputStream.toString().length() > 0);
-    }
-
-    @Test
-    @DisplayName("Main menu - default case (invalid choice)")
-    void testMainMenuDefaultCase() {
-        String input = "999\n5\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        Main main = new Main();
-        outputStream.reset();
-        main.start();
         String output = outputStream.toString();
-        assertTrue(output.contains("Invalid") || output.length() > 0);
+        assertTrue(output.length() > 0);
     }
+    
+   
 
     
 

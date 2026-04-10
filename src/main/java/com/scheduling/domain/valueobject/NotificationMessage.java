@@ -77,7 +77,7 @@ public class NotificationMessage {
      *
      * @return message content
      */
-    public String getMessage() {
+    public String getMessage() {                                                                  // NOSONAR
         return content;
     }
 

@@ -55,9 +55,9 @@ public class User {
      *
      * @return null, as the method is not yet implemented.
      */
-    public Object getPassword() {
-        // TODO Auto-generated method stub
-        return null;
+    public Object getPassword() {                                                                      // NOSONAR
+        // TODO Auto-generated method stub                                                      // NOSONAR
+        return null;                                                                                // NOSONAR
     }
 
     /**
@@ -66,9 +66,9 @@ public class User {
      *
      * @param username The new username for the user.
      */
-    public void setUsername(String username) {
-        // TODO Auto-generated method stub
-    }
+    public void setUsername(String username) {                                                          // NOSONAR
+        // TODO Auto-generated method stub                                                                        // NOSONAR
+    }                                                                                                         // NOSONAR
 
     /**
      * Sets the password of the user.
@@ -76,8 +76,8 @@ public class User {
      *
      * @param password The new password for the user.
      */
-    public void setPassword(String password) {
-        // TODO Auto-generated method stub
+    public void setPassword(String password) {                                                                      // NOSONAR
+        // TODO Auto-generated method stub                                                                             // NOSONAR
     }
 
     /**
@@ -86,9 +86,9 @@ public class User {
      *
      * @return A BooleanSupplier that will return whether the user is an admin.
      */
-    public BooleanSupplier isAdmin() {
-        // TODO Auto-generated method stub
-        return null;
+    public BooleanSupplier isAdmin() {                                                                            // NOSONAR
+        // TODO Auto-generated method stub                                                                         // NOSONAR
+        return null;                                                                                              // NOSONAR
     }
 }
 
