@@ -47,20 +47,20 @@ class MainTest {
         return method.invoke(mainApp, args);
     }
 
-    private void setPrivateField(String fieldName, Object value) throws Exception {
+    private void setPrivateField(String fieldName, Object value) throws Exception {                                      // NOSONAR
         Field field = Main.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(mainApp, value);
     }
     
-    private Object getPrivateField(String fieldName) throws Exception {
+    private Object getPrivateField(String fieldName) throws Exception {                                                   // NOSONAR
         Field field = Main.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(mainApp);
     }
 
     @Test
-    void testStartAndExitImmediately() throws Exception {
+    void testStartAndExitImmediately() throws Exception {                                                                 // NOSONAR
         provideInput("5\n");
         mainApp = new Main();
         mainApp.start();
@@ -71,7 +71,7 @@ class MainTest {
     }
 
     @Test
-    void testRunMenuInvalidChoice() throws Exception {
+    void testRunMenuInvalidChoice() throws Exception {                                                                        // NOSONAR
         provideInput("99\n5\n");
         mainApp = new Main();
         mainApp.start();
