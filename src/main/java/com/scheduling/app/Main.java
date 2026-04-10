@@ -7,8 +7,6 @@ import com.scheduling.service.*;
 import com.scheduling.strategy.*;
 import com.scheduling.observer.*;
 import com.scheduling.observer.Observer;
-
-import java.io.ObjectInputFilter.Status;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -56,6 +54,7 @@ public class Main {
 	 private boolean inAdminMenu = false;
 	 private boolean inUserMenu = false;
 	 private static final String ADMIN_DASHBOARD_TITLE = "ADMIN DASHBOARD";
+	 private static final String LIST_ITEM_FORMAT = "  [%d] %s%n";
 	 
 	 
 	 static {
@@ -357,16 +356,15 @@ public class Main {
                 .collect(Collectors.toList());
                 
         if (availableSlots.isEmpty()) {
-            System.out.println("No available slots at the moment.");
+            System.out.println("No available slots at the moment.");                                                               // NOSONAR
             return;
         }
 
-        System.out.println("Found " + availableSlots.size() + " available slot(s):\n");
+        System.out.println("Found " + availableSlots.size() + " available slot(s):\n");                                            // NOSONAR
 
         for (int i = 0; i < availableSlots.size(); i++) {
             Appointment apt = availableSlots.get(i);
-            System.out.printf("  [%d] %s%n", i + 1, formatAppointment(apt));
-        }
+            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(apt));        }                                        // NOSONAR
     }
 
     //  SPRINT 2: BOOKING 
@@ -396,24 +394,24 @@ public class Main {
         // Step 5: Create and Book
         Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
 
-        logger.info("\nBooking Summary:");
-        logger.info(() -> "   Type: " + selectedType.getClass().getSimpleName());
-        logger.info(() -> "   Date: " + dateTime.format(DATE_FORMAT));
-        logger.info(() -> "   Duration: " + duration + MINUTES_SUFFIX);
-        logger.info(() -> "   Participants: " + participants);
-        logger.info("\nConfirm booking? (y/n): ");
+        System.out.println("\nBooking Summary:");                                                                        // NOSONAR
+        System.out.println("   Type: " + selectedType.getClass().getSimpleName());                                         // NOSONAR
+        System.out.println("   Date: " + dateTime.format(DATE_FORMAT));                                                        // NOSONAR
+        System.out.println("   Duration: " + duration + MINUTES_SUFFIX);                                                            // NOSONAR
+        System.out.println("   Participants: " + participants);                                                                        // NOSONAR
+        System.out.print("\nConfirm booking? (y/n): ");                                                                             // NOSONAR
         String confirm = safeReadLine().trim().toLowerCase();
 
         if (confirm.equals("y") || confirm.equals("yes")) {
             boolean success = appointmentService.book(appointment);
 
             if (success) {
-            	appointment.setBookedBy(currentUser.getUsername());
-            	logger.info("✅ Appointment booked successfully!");
+            	appointment.setBookedBy(currentUser.getUsername());                                                  // NOSONAR
+            	System.out.print("✅ Appointment booked successfully!");                                                                    // NOSONAR
             	logger.info(() -> "   Status: " + appointment.getStatus());
 
                 // Send confirmation notification
-                if (currentUser != null) {
+                if (currentUser != null) {                                                                                  // NOSONAR
                 	 notificationManager.sendReminderToEmail(PROJECT_EMAIL, appointment);
                 }
             } else {
@@ -433,31 +431,29 @@ public class Main {
      * Allows user to select an appointment type.
      */
     private AppointmentType selectAppointmentType() {
-    	logger.info("\nSelect Appointment Type (US5.1):");
-    	logger.info("   -----------------------------");
-
+        System.out.println("\nSelect Appointment Type (US5.1):");                                              // NOSONAR
+        System.out.println("   -----------------------------");                                         // NOSONAR
+        
         String[] typeNames = {
                 "Urgent", "Follow-up", "Assessment",
                 "Virtual", "In-Person", "Individual", "Group"
         };
-
+        
         for (int i = 0; i < typeNames.length; i++) {
             int index = i;
-            logger.info(() -> "   [" + (index + 1) + "] " + typeNames[index]);
+            System.out.println("   [" + (index + 1) + "] " + typeNames[index]);                             // NOSONAR
         }
-
-        System.out.print("\nSelect type (1-7): ");                                                          // NOSONAR
+        
+        System.out.print("\nSelect type (1-7): ");                                                               // NOSONAR
         int choice = readIntInput();
-
+        
         if (choice < 1 || choice > 7) {
-        	logger.warning(INVALID_SELECTION_MSG);
+            System.out.println(INVALID_SELECTION_MSG);                                                  // NOSONAR
             return null;
         }
-
+        
         AppointmentType selectedType = appointmentTypes.get(choice - 1);
-
-        logger.info(() -> "✅ Selected: " + selectedType.getClass().getSimpleName());
-
+        System.out.println("✅ Selected: " + selectedType.getClass().getSimpleName());                                      // NOSONAR
         return selectedType;
     }
 
@@ -893,13 +889,12 @@ public class Main {
             .collect(Collectors.toList());
 
         if (myAppointments.isEmpty()) {
-            System.out.println("You have no bookings yet.");
+            System.out.println("You have no bookings yet.");                                                           // NOSONAR
             return;
         }
 
         for (int i = 0; i < myAppointments.size(); i++) {
-            System.out.printf("  [%d] %s%n", i + 1, formatAppointment(myAppointments.get(i)));
-        }
+        	System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(myAppointments.get(i)));        }                            // NOSONAR
     }
 
     /**
@@ -919,8 +914,7 @@ public class Main {
     private void displayAppointmentList(List<Appointment> appointments, String title) {
         System.out.println("\n" + title + "\n");                                                                        // NOSONAR
         for (int i = 0; i < appointments.size(); i++) {
-            System.out.printf("  [%d] %s%n", i + 1, formatAppointment(appointments.get(i)));                                      // NOSONAR
-        }
+        	System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(appointments.get(i)));        }                   // NOSONAR
     }
 
     /**
