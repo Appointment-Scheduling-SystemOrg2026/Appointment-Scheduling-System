@@ -883,7 +883,6 @@ public class Main {
     private void viewMyBookings() {
         printHeader("MY BOOKINGS");
         
-        // نجلب كل المواعيد ونقوم بتصفيتها
         List<Appointment> myAppointments = repository.findAll().stream()
             .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy()))
             .collect(Collectors.toList());

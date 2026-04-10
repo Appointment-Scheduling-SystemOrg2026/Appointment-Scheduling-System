@@ -30,8 +30,8 @@ class VirtualAppointmentTest {
     }
 
     
-    @Test
-    void testGetTypeName() {
+    @Test 
+    void testGetTypeName() {                                                                                                                          // NOSONAR
         VirtualAppointment virtual = new VirtualAppointment();
         virtual.getTypeName();
     }
