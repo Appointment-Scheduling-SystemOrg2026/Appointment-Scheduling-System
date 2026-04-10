@@ -1,6 +1,5 @@
 package com.scheduling.app;
 
-import com.scheduling.domain.entity.User;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -8,7 +7,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,6 +71,14 @@ class MainTest {
     }
 
     @Test
+    void testRunMenuInvalidChoice() throws Exception {
+        provideInput("99\n5\n");
+        mainApp = new Main();
+        mainApp.start();
+        assertTrue(testOut.toString().contains("Invalid choice."));
+    }
+
+    @Test
     void testAdminLoginSuccess() throws Exception {
         provideInput("admin\nadmin123\n6\n");
         mainApp = new Main();
@@ -100,9 +106,11 @@ class MainTest {
     }
 
     @Test
-    void testAdminFunctions() throws Exception {
+    void testAdminFullCycle() throws Exception {
         String input = "admin\nadmin123\n" +
-                       "3\n1\n2026\n05\n05\n10\n0\n30\n1\n1\n" +
+                       "1\n" + 
+                       "3\n1\n2027\n05\n05\n10\n0\n30\n1\n1\n" +
+                       "4\n1\n" +
                        "5\n" +
                        "6\n";
         
@@ -112,7 +120,51 @@ class MainTest {
         
         String output = testOut.toString();
         assertTrue(output.contains("Login successful"));
-        assertTrue(output.contains("SYSTEM STATISTICS"));
+        assertTrue(output.contains("ALL APPOINTMENTS"));
+        assertTrue(output.contains("Modified by Admin"));
+        assertTrue(output.contains("Reservation cancelled by Admin"));
+    }
+
+    @Test
+    void testUserBookModifyCancelSuccess() throws Exception {
+        String input = "TestUser\n" +
+                       "2\n" +
+                       "1\n" +
+                       "2027\n05\n10\n10\n0\n" +
+                       "30\n" + "1\n" +
+                       "y\n" +
+                       "3\n" +
+                       "1\n" +
+                       "2028\n06\n11\n11\n30\n" +
+                       "45\n" + "2\n" +
+                       "2\n" +
+                       "4\n" +
+                       "1\n" +
+                       "y\n" +
+                       "6\n";
+        
+        provideInput(input);
+        mainApp = new Main();
+        invokePrivateMethod("userModeFlow", null, null);
+        
+        String output = testOut.toString();
+        assertTrue(output.contains("Appointment booked successfully!"));
+        assertTrue(output.contains("Appointment modified successfully!"));
+        assertTrue(output.contains("Appointment cancelled successfully!"));
+    }
+
+    @Test
+    void testUserCancelAbort() throws Exception {
+        String input = "TestUser\n" +
+                       "2\n1\n2027\n05\n10\n10\n0\n30\n1\ny\n" +
+                       "4\n1\nn\n" +
+                       "6\n";
+        
+        provideInput(input);
+        mainApp = new Main();
+        invokePrivateMethod("userModeFlow", null, null);
+        
+        assertTrue(testOut.toString().contains("Cancellation aborted."));
     }
 
     @Test
