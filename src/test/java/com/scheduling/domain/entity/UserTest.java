@@ -7,48 +7,64 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserTest {
 
     @Test
-    void shouldCreateUser() {
-        User user = new User("tasneem", "1234");
+    void shouldCreateUserAndGetData() {
+        User user = new User("ahmad", "1234");
 
-        assertEquals("tasneem", user.getUsername());
-    }
-
-    @Test
-    void shouldMatchPasswordCorrectly() {
-        User user = new User("user", "pass");
-
-        assertTrue(user.passwordMatches("pass"));
+        assertEquals("ahmad", user.getUsername());
+        assertEquals("1234", user.getPassword());
+        assertTrue(user.passwordMatches("1234"));
         assertFalse(user.passwordMatches("wrong"));
     }
 
     @Test
-    void shouldReturnPassword() {
-        User user = new User("user", "pass");
+    void shouldUpdateUsernameSuccessfully() {
+        User user = new User("old", "1234");
 
-        assertEquals("pass", user.getPassword());
+        user.setUsername("new");
+
+        assertEquals("new", user.getUsername());
+    }
+
+    @Test
+    void shouldNotUpdateUsernameWhenInvalid() {
+        User user = new User("old", "1234");
+
+        user.setUsername("");
+        assertEquals("old", user.getUsername());
+
+        user.setUsername(null);
+        assertEquals("old", user.getUsername());
+    }
+
+    @Test
+    void shouldUpdatePasswordSuccessfully() {
+        User user = new User("user", "1234");
+
+        user.setPassword("9999");
+
+        assertEquals("9999", user.getPassword());
+    }
+
+    @Test
+    void shouldNotUpdatePasswordWhenInvalid() {
+        User user = new User("user", "1234");
+
+        user.setPassword("");
+        assertEquals("1234", user.getPassword());
+
+        user.setPassword(null);
+        assertEquals("1234", user.getPassword());
     }
 
     @Test
     void shouldDetectAdminUser() {
-        User user = new User("admin", "123");
-
-        assertTrue(user.isAdmin().getAsBoolean());
+        User admin = new User("admin", "1234");
+        assertTrue(admin.isAdmin().getAsBoolean());
     }
 
     @Test
     void shouldDetectNonAdminUser() {
-        User user = new User("user", "123");
-
+        User user = new User("user1", "1234");
         assertFalse(user.isAdmin().getAsBoolean());
-    }
-    @Test
-    void shouldUpdateUsernameAndPassword() {
-        User user = new User("old", "123");
-
-        user.setUsername("new");
-        user.setPassword("456");
-
-        assertEquals("new", user.getUsername());
-        assertEquals("456", user.getPassword());
     }
 }
