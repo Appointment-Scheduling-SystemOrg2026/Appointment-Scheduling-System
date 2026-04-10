@@ -2,6 +2,8 @@ package com.scheduling.app;
 
 import com.scheduling.domain.entity.User;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -81,17 +83,22 @@ class MainTest {
         assertTrue(output.contains("Login successful"));
         assertTrue(output.contains("Logged out."));
     }
-
-    @Test
-    void testAdminLoginFail() throws Exception {
-        provideInput("wrong\nwrong\n");
-        mainApp = new Main();
-        
-        invokePrivateMethod("adminLoginFlow", null, null);
-        
-        assertTrue(testOut.toString().contains("Invalid credentials"));
-    }
     
+    @ParameterizedTest
+    @CsvSource({
+        "wrong\\nwrong\\n, adminLoginFlow, Invalid credentials",
+        "TestUser\\n4\\n1\\nn\\n6\\n, userModeFlow, No cancellable appointments found",
+        "TestUser\\n3\\n99\\n6\\n, userModeFlow, No modifiable appointments found",
+        "\\n\\n, runSystemDemo, DEMO COMPLETED SUCCESSFULLY"
+    })
+    void testSimpleFlows(String input, String methodName, String expectedOutput) throws Exception {
+        String processedInput = input.replace("\\n", "\n");
+        provideInput(processedInput);
+        mainApp = new Main();
+        invokePrivateMethod(methodName, null, null);
+        assertTrue(testOut.toString().contains(expectedOutput));
+    }
+
     @Test
     void testAdminFunctions() throws Exception {
         String input = "admin\nadmin123\n" +
@@ -170,56 +177,17 @@ class MainTest {
         assertTrue(output.contains("USER MENU"));
     }
 
-    @Test
-    void testCancelAppointmentFlow() throws Exception {
-        provideInput("TestUser\n4\n1\nn\n6\n");
+    @ParameterizedTest
+    @CsvSource({
+        "viewAvailableSlots, AVAILABLE APPOINTMENT SLOTS",
+        "sendAllReminders, SEND REMINDERS",
+        "displayStatistics, SYSTEM STATISTICS",
+        "displayUserStories, IMPLEMENTED USER STORIES"
+    })
+    void testDisplayMethods(String methodName, String expectedOutput) throws Exception {
         mainApp = new Main();
-        invokePrivateMethod("userModeFlow", null, null);
-        assertTrue(testOut.toString().contains("No cancellable appointments found"));
-    }
-
-    @Test
-    void testModifyAppointmentFlowInvalidIndex() throws Exception {
-        provideInput("TestUser\n3\n99\n6\n");
-        mainApp = new Main();
-        invokePrivateMethod("userModeFlow", null, null);
-        assertTrue(testOut.toString().contains("No modifiable appointments found"));
-    }
-
-    @Test
-    void testViewAvailableSlots() throws Exception {
-        mainApp = new Main();
-        invokePrivateMethod("viewAvailableSlots", null, null);
-        assertTrue(testOut.toString().contains("AVAILABLE APPOINTMENT SLOTS"));
-    }
-
-    @Test
-    void testSendReminders() throws Exception {
-        mainApp = new Main();
-        invokePrivateMethod("sendAllReminders", null, null);
-        assertTrue(testOut.toString().contains("SEND REMINDERS"));
-    }
-
-    @Test
-    void testDisplayStatistics() throws Exception {
-        mainApp = new Main();
-        invokePrivateMethod("displayStatistics", null, null);
-        assertTrue(testOut.toString().contains("SYSTEM STATISTICS"));
-    }
-    
-    @Test
-    void testDisplayUserStories() throws Exception {
-        mainApp = new Main();
-        invokePrivateMethod("displayUserStories", null, null);
-        assertTrue(testOut.toString().contains("IMPLEMENTED USER STORIES"));
-    }
-
-    @Test
-    void testRunSystemDemo() throws Exception {
-        provideInput("\n\n");
-        mainApp = new Main();
-        invokePrivateMethod("runSystemDemo", null, null);
-        assertTrue(testOut.toString().contains("DEMO COMPLETED SUCCESSFULLY"));
+        invokePrivateMethod(methodName, null, null);
+        assertTrue(testOut.toString().contains(expectedOutput));
     }
 
     @Test
