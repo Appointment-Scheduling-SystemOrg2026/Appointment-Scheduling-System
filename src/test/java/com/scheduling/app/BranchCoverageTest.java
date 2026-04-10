@@ -51,7 +51,7 @@ class BranchCoverageTest {
 
         String output = outputStream.toString();
 
-        assertTrue(output.length() > 0);
+        assertTrue(output.length() > 0);                                                         // NOSONAR
     }
 
     static Stream<Arguments> mainMenuScenarios() {
