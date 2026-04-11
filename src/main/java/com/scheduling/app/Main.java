@@ -14,12 +14,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.logging.*;
 
-
 /**
  * Main Application Entry Point for the Appointment Scheduling System.
  *
  * <p>This class demonstrates all implemented User Stories across 5 Sprints:</p>
- * /**
  * <ul>
  *   <li><b>Sprint 1:</b> Core Scheduling &amp; Authentication (US1.1-US1.3)</li>
  *   <li><b>Sprint 2:</b> Booking &amp; Business Rules (US2.1-US2.3)</li>
@@ -27,99 +25,82 @@ import java.util.logging.*;
  *   <li><b>Sprint 5:</b> Appointment Types &amp; Polymorphism (US5.1-US5.2)</li>
  * </ul>
  *
- *
  * @author Tasneem
  * @version 2.0
  * @since 2025
  */
 public class Main {
-	
-	 private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
-	 private static final String ENTER_CHOICE_PROMPT = "Enter your choice: ";
-	 private static final String MINUTES_SUFFIX = " minutes";
-	 private static final String INVALID_SELECTION_MSG = "Invalid selection.";
-	 private static final String ENTER_APPOINTMENT_NUMBER_PROMPT = "\nEnter appointment number: ";
-	 private static final String HORIZONTAL_SEPARATOR = "========================================================";
-	 private static final String SHORT_SEPARATOR = "   --------------------------------";
-	 private static final String LIST_ITEM_PREFIX = "   - ";
-	 private static final String DASH_SEPARATOR = "--------------------------------------------------------";
-	 private static final String ADMIN_USERNAME = "admin";
-	 private static final String EMPTY_LINE = "                                                        ";   
-	 private static final String ADMIN_PASSWORD =
-		        Optional.ofNullable(System.getenv("ADMIN_PASSWORD"))
-		                .orElse("admin123");
-	 private static final Logger logger = Logger.getLogger(Main.class.getName());
-	 
-	 private boolean running = true;
-	 private boolean inAdminMenu = false;
-	 private boolean inUserMenu = false;
-	 private static final String ADMIN_DASHBOARD_TITLE = "ADMIN DASHBOARD";
-	 private static final String LIST_ITEM_FORMAT = "  [%d] %s%n";
-	 
-	 
-	 static {
-	     ConsoleHandler handler = new ConsoleHandler();
-	     handler.setFormatter(new SimpleConsoleFormatter());
-
-	     logger.setUseParentHandlers(false);
-	     logger.addHandler(handler);
-	 }
-	 
-	 class MenuItem {
-		    String title;
-		    Runnable action;
-
-		    MenuItem(String title, Runnable action) {
-		        this.title = title;
-		        this.action = action;
-		    }
-		}
-	 
+    
+     private static final String PROJECT_EMAIL = "scheduling.project2026@gmail.com";
+     private static final String ENTER_CHOICE_PROMPT = "Enter your choice: ";
+     private static final String MINUTES_SUFFIX = " minutes";
+     private static final String INVALID_SELECTION_MSG = "Invalid selection.";
+     private static final String ENTER_APPOINTMENT_NUMBER_PROMPT = "\nEnter appointment number: ";
+     private static final String HORIZONTAL_SEPARATOR = "========================================================";
+     private static final String SHORT_SEPARATOR = "   --------------------------------";
+     private static final String LIST_ITEM_PREFIX = "   - ";
+     private static final String DASH_SEPARATOR = "--------------------------------------------------------";
+     private static final String ADMIN_USERNAME = "admin";
+     private static final String EMPTY_LINE = "                                                        ";   
+     private static final String ADMIN_PASSWORD =
+                Optional.ofNullable(System.getenv("ADMIN_PASSWORD"))
+                        .orElse("admin123");
+     private static final Logger logger = Logger.getLogger(Main.class.getName());
+     
+     private boolean running = true;
+     private boolean inAdminMenu = false;
+     private boolean inUserMenu = false;
+     private static final String ADMIN_DASHBOARD_TITLE = "ADMIN DASHBOARD";
+     private static final String LIST_ITEM_FORMAT = "  [%d] %s%n";
+     
+     
+     static {
+         ConsoleHandler handler = new ConsoleHandler();
+         handler.setFormatter(new SimpleConsoleFormatter());
+         logger.setUseParentHandlers(false);
+         logger.addHandler(handler);
+     }
+     
+     class MenuItem {
+            String title;
+            Runnable action;
+            MenuItem(String title, Runnable action) {
+                this.title = title;
+                this.action = action;
+            }
+        }
+     
     //  CONSTANTS 
     /** Maximum appointment duration in minutes */
     private static final int MAX_DURATION = 120;
-
     /** Maximum participants per appointment */
     private static final int MAX_PARTICIPANTS = 10;
-
     /** Date time format for display */
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     //  DEPENDENCIES 
-
     private final Scanner scanner = new Scanner(System.in);
-
     /** Repository for appointment persistence */
     private AppointmentRepository repository;
-
     /** Service for appointment operations */
     private AppointmentService appointmentService;
-
     /** Manager for notifications using Observer pattern */
     private NotificationManager notificationManager;
-
     /** Service for authentication */
     private AuthenticationService authService;
-
     /** System administrator */
     private Administrator admin;
-
     /** Currently logged-in user */
     private User currentUser;
-
     /** List of all supported appointment types */
     private final List<AppointmentType> appointmentTypes = new ArrayList<>();
     
     private void runMenu(String title, List<MenuItem> items) {
         boolean stayInLoop = true; 
-
         while (stayInLoop) {
             printMenuDisplay(title, items);
-
             System.out.print(ENTER_CHOICE_PROMPT);                                            // NOSONAR
             int choice = readIntInput();
-
             if (choice == -2) {
                 running = false;
                 stayInLoop = false; 
@@ -129,9 +110,8 @@ public class Main {
             } 
             else {
                 items.get(choice - 1).action.run();
-
                 if (!running || 
-                		 (title.equals(ADMIN_DASHBOARD_TITLE) && !inAdminMenu) ||
+                         (title.equals(ADMIN_DASHBOARD_TITLE) && !inAdminMenu) ||
                     (title.equals("USER MENU") && !inUserMenu)) {
                     
                     stayInLoop = false; 
@@ -140,7 +120,6 @@ public class Main {
         }
     }
     //  CONSTRUCTOR 
-
     /**
      * Constructs the Main application and initializes all system components.
      */
@@ -150,50 +129,38 @@ public class Main {
         authService = new AuthenticationService();
         admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
     }
-
     //  INITIALIZATION METHODS 
-
     /**
      * Initializes all system layers and dependencies.
      */
     private void initializeSystem() {
-    	 logger.info(HORIZONTAL_SEPARATOR);
+         logger.info(HORIZONTAL_SEPARATOR);
         printHeader("                         Welcome                   ");
         logger.info(HORIZONTAL_SEPARATOR);
-
         // Initialize Repository Layer
         repository = new AppointmentRepository();
-
         // Initialize Strategy Rules (Strategy Pattern)
         List<BookingRuleStrategy> bookingRules = Arrays.asList(
                 new DurationRuleStrategy(MAX_DURATION),
                 new ParticipantLimitStrategy(MAX_PARTICIPANTS)
         );
-
         // Initialize Service Layer
         appointmentService = new AppointmentService(repository, bookingRules);
-
      // Initialize Observer Pattern for notifications
         NotificationService consoleService = new NotificationService();
         EmailNotificationService emailService = new EmailNotificationService();
-
         emailService.enableRealEmail(PROJECT_EMAIL, "jgwgymubwqmxxylu");
-
         List<Observer> notificationObservers = Arrays.asList(consoleService, emailService);
         notificationManager = new NotificationManager(notificationObservers);
         // Initialize Authentication
         authService = new AuthenticationService();
-
         // Create default administrator
         admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
        
-
         // Add sample data
         initializeSampleData();
-
         
     }
-
     /**
      * Initializes all supported appointment types.
      */
@@ -206,13 +173,11 @@ public class Main {
         appointmentTypes.add(new IndividualAppointment());
         appointmentTypes.add(new GroupAppointment());
     }
-
     /**
      * Adds sample appointments for testing and demonstration.
      */
     private void initializeSampleData() {
         
-
         // Sample 1: In-person appointment tomorrow
         repository.save(new Appointment(
                 LocalDateTime.now().plusDays(1).withHour(10).withMinute(0),
@@ -220,7 +185,6 @@ public class Main {
                 1,
                 new InPersonAppointment()
         ));
-
         // Sample 2: Virtual appointment in 2 days
         repository.save(new Appointment(
                 LocalDateTime.now().plusDays(2).withHour(14).withMinute(30),
@@ -228,7 +192,6 @@ public class Main {
                 3,
                 new VirtualAppointment()
         ));
-
         // Sample 3: Urgent appointment in 3 hours
         repository.save(new Appointment(
                 LocalDateTime.now().plusHours(3),
@@ -236,7 +199,6 @@ public class Main {
                 1,
                 new UrgentAppointment()
         ));
-
         // Sample 4: Group appointment next week
         repository.save(new Appointment(
                 LocalDateTime.now().plusWeeks(1).withHour(9).withMinute(0),
@@ -244,19 +206,15 @@ public class Main {
                 5,
                 new GroupAppointment()
         ));
-
       
     }
-
     //  MAIN APPLICATION LOOP 
-
     /**
      * Starts the main application loop.
      */
     public void start() {
         printWelcomeBanner();
         running = true;
-
         while (running) {
             runMenu("MAIN MENU", List.of(
                 new MenuItem("Administrator Login", this::adminLoginFlow), 
@@ -271,16 +229,13 @@ public class Main {
         }
     }
     
-
     //  SPRINT 1: AUTHENTICATION 
-
     /**
      * Handles administrator login flow (US1.1).
      */
     private void adminLoginFlow() {
         System.out.print("Username: ");                                                              // NOSONAR
         String username = safeReadLine().trim(); 
-
         System.out.print("Password: ");                                                                // NOSONAR
         String password = safeReadLine().trim(); 
         
@@ -288,12 +243,10 @@ public class Main {
             System.out.println("Invalid credentials");                                               // NOSONAR
             return;
         }
-
         System.out.println("Login successful");                                                         // NOSONAR
         inAdminMenu = true;
-
         runMenu(ADMIN_DASHBOARD_TITLE, List.of(
-        	new MenuItem("Add New Available Slot", this::adminAddSlot),
+            new MenuItem("Add New Available Slot", this::adminAddSlot),
             new MenuItem("View All Appointments", this::viewAllAppointments),
             new MenuItem("Send Reminders", this::sendAllReminders),
             new MenuItem("Modify Reservation", this::adminModifyReservation),
@@ -305,7 +258,6 @@ public class Main {
             })
         ));
     }
-
     
     /**
      * Handles user mode flow.
@@ -314,18 +266,14 @@ public class Main {
         printHeader("USER MODE");
         System.out.print("Enter your email/username: ");                                                          // NOSONAR
         String username = safeReadLine().trim(); 
-
         if (username.isEmpty()) {
             System.out.println("Username cannot be empty.");                                      // NOSONAR
             return;
         }
-
         currentUser = new User(username, "user123");
         System.out.println("✅ Welcome, " + username + "!");                                      // NOSONAR
-
         userMenu();
     }
-
     /**
      * Displays the user menu.
      */
@@ -343,15 +291,12 @@ public class Main {
             })
         ));
     }
-
     //  SPRINT 1: VIEW SLOTS 
-
     /**
      * Displays all available appointment slots.
      */
     private void viewAvailableSlots() {
         printHeader("AVAILABLE APPOINTMENT SLOTS (US1.3)");
-
         List<Appointment> availableSlots = appointmentService.viewAvailableSlots().stream()
                 .filter(apt -> apt.getStatus() == AppointmentStatus.AVAILABLE) 
                 .collect(Collectors.toList());
@@ -360,16 +305,9 @@ public class Main {
             System.out.println("No available slots at the moment.");                                                               // NOSONAR
             return;
         }
-
-        System.out.println("Found " + availableSlots.size() + " available slot(s):\n");                                            // NOSONAR
-
-        for (int i = 0; i < availableSlots.size(); i++) {
-            Appointment apt = availableSlots.get(i);
-            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(apt));        }                                        // NOSONAR
+        displayAppointmentList(availableSlots, "Found " + availableSlots.size() + " available slot(s):");
     }
-
     //  SPRINT 2: BOOKING 
-
     /**
      * Handles the appointment booking flow.
      */
@@ -385,11 +323,7 @@ public class Main {
             return;
         }
         
-        System.out.println("Found " + availableSlots.size() + " available slot(s):\n"); // NOSONAR
-        for (int i = 0; i < availableSlots.size(); i++) {
-            Appointment apt = availableSlots.get(i);
-            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(apt)); // NOSONAR
-        }
+        displayAppointmentList(availableSlots, "Found " + availableSlots.size() + " available slot(s):");
         
         System.out.print("\nSelect slot number to book: "); // NOSONAR
         int index = readIntInput() - 1;
@@ -416,7 +350,6 @@ public class Main {
         }
     }
     // SPRINT 5: APPOINTMENT TYPES 
-
     /**
      * Allows user to select an appointment type.
      */
@@ -446,9 +379,7 @@ public class Main {
         System.out.println("✅ Selected: " + selectedType.getClass().getSimpleName());                                      // NOSONAR
         return selectedType;
     }
-
     //  SPRINT 4: MODIFY/CANCEL  
-
     /**
      * Handles appointment modification flow.
      */
@@ -458,7 +389,6 @@ public class Main {
         List<Appointment> myAppointments = repository.findAll().stream()
             .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy()))
             .collect(Collectors.toList());
-
         if (myAppointments.isEmpty()) {
             System.out.println("No modifiable appointments found."); // NOSONAR
             return;
@@ -481,16 +411,12 @@ public class Main {
             .collect(Collectors.toList());
             
         availableSlots.remove(toModify); 
-
         if (availableSlots.isEmpty()) {
             System.out.println("No other available slots to move to."); // NOSONAR
             return;
         }
         
-        System.out.println("\nSelect a new slot from the available list:"); // NOSONAR
-        for (int i = 0; i < availableSlots.size(); i++) {
-            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(availableSlots.get(i))); // NOSONAR
-        }
+        displayAppointmentList(availableSlots, "Select a new slot from the available list:");
         
         System.out.print("\nSelect new slot number: "); // NOSONAR
         int newIndex = readIntInput() - 1;
@@ -518,23 +444,18 @@ public class Main {
         
         AppointmentType selectedType = selectAppointmentType();
         if (selectedType == null) return;
-
         LocalDateTime dateTime = enterDateTime();
         if (dateTime == null) return;
-
         int duration = enterDuration();
         if (duration <= 0) return;
-
         int participants = enterParticipants();
         if (participants <= 0) return;
-
         Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
         appointment.setStatus(AppointmentStatus.AVAILABLE); 
         
         repository.save(appointment);
         System.out.println("✅ Slot added successfully!"); // NOSONAR
     }
-
     /**
      * Handles appointment cancellation flow.
      */
@@ -577,52 +498,38 @@ public class Main {
             System.out.println("Cancellation aborted."); // NOSONAR
         }
     }
-
     /**
      * Admin modifies any reservation (US4.2).
      */
     private void adminModifyReservation() {
         printHeader("ADMIN: MODIFY RESERVATION (US4.2)");
-
         List<Appointment> allAppointments = repository.findAll();
-
         if (allAppointments.isEmpty()) {
             System.out.println("No appointments in the system.");                                // NOSONAR
             return;
         }
-
         displayAppointmentList(allAppointments, "Select reservation to modify:");
-
         System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);                                          // NOSONAR
         int index = readIntInput() - 1;
-
         if (index < 0 || index >= allAppointments.size()) {
             System.out.println(INVALID_SELECTION_MSG);                                                // NOSONAR
             return;
         }
-
         Appointment original = allAppointments.get(index);
         System.out.println("\nSelected: " + formatAppointment(original));                                  // NOSONAR
-
         LocalDateTime newDateTime = enterDateTime();
         int newDuration = enterDuration();
         int newParticipants = enterParticipants();
         AppointmentType newType = selectAppointmentType();
-
         Appointment updated = new Appointment(newDateTime, newDuration, newParticipants, newType);
-
         boolean success = appointmentService.modifyAppointment(original, updated);
         System.out.println(success ? "✅ Modified by Admin!" : "Modification failed.");                       // NOSONAR
     }
-
     /**
      * Admin cancels any reservation (US4.2).
      */
     private void adminCancelReservation() {
-        System.out.println();                                                                             // NOSONAR
-        System.out.println(HORIZONTAL_SEPARATOR);                                                        // NOSONAR
-        System.out.println("  ADMIN: CANCEL RESERVATION");                                              // NOSONAR
-        System.out.println(HORIZONTAL_SEPARATOR);                                                      // NOSONAR
+        printHeader("ADMIN: CANCEL RESERVATION");
         
         List<Appointment> allAppointments = repository.findAll();
         
@@ -630,11 +537,9 @@ public class Main {
             System.out.println("No appointments in the system.");                                      // NOSONAR
             return;
         }
-        System.out.println("\nSelect reservation to cancel:\n");                                          // NOSONAR
-        for (int i = 0; i < allAppointments.size(); i++) {
-            Appointment apt = allAppointments.get(i);
-            System.out.println("  [" + (i + 1) + "] " + formatAppointment(apt));                    // NOSONAR
-        } 
+        
+        displayAppointmentList(allAppointments, "Select reservation to cancel:");
+        
         System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);                                   // NOSONAR
         int index = readIntInput() - 1;
         
@@ -656,28 +561,19 @@ public class Main {
             System.out.println(INVALID_SELECTION_MSG);                                             // NOSONAR
         }
     }
-
     //  SPRINT 3: NOTIFICATIONS 
-
     /**
      * Sends reminders for all appointments.
      */
     private void sendAllReminders() {
-        System.out.println();                                                                                   // NOSONAR
-        System.out.println("==========================================");                                            // NOSONAR
-        System.out.println("          SEND REMINDERS");                                                            // NOSONAR
-        System.out.println("==========================================");                                              // NOSONAR
-
+        printHeader("SEND REMINDERS");
         List<Appointment> appointments = repository.findAll();
-
         if (appointments.isEmpty()) {
             System.out.println("No appointments to send reminders for.");                                                                // NOSONAR
             return;
         }
-
         int sentCount = 0;
         String fixedEmail = "tasneem@gmail.com";
-
         for (Appointment apt : appointments) {
            
             if (apt.getStatus() == AppointmentStatus.CONFIRMED) {
@@ -685,7 +581,6 @@ public class Main {
                 sentCount++;
             }
         }
-
         if (sentCount == 0) {
             System.out.println("No confirmed appointments to send reminders for.");                              // NOSONAR
         } else {
@@ -693,58 +588,46 @@ public class Main {
         }
     }
     //  SYSTEM DEMO 
-
     /**
      * Runs a comprehensive demo of all implemented features.
      */
     private void runSystemDemo() {
         printHeader("SYSTEM DEMO - ALL SPRINTS");
         System.out.println("This demo will showcase all implemented User Stories.\n");                    // NOSONAR
-
         System.out.print("Press ENTER to start the demo...");                                               // NOSONAR
         scanner.nextLine();
-
         demoSprint1();
         demoSprint2();
         demoSprint3();
         demoSprint4();
         demoSprint5();
-
         printSeparator();
         System.out.println("DEMO COMPLETED SUCCESSFULLY!");                                       // NOSONAR
         System.out.println("All User Stories have been demonstrated.");                               // NOSONAR
         printSeparator();
-
         System.out.print("\nPress ENTER to return to main menu...");                              // NOSONAR
         scanner.nextLine(); 
     }
-
     private void demoSprint1() {
         printDemoHeader("SPRINT 1: Core Scheduling & Authentication");
-
         System.out.println("\nUS1.1 - Administrator Login");                                       // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                    // NOSONAR
         boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
-
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));                       // NOSONAR
-
         System.out.println("\nUS1.3 - View Available Slots");                                             // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                  // NOSONAR
         List<Appointment> slots = appointmentService.viewAvailableSlots();
         System.out.println("   Available slots: " + slots.size());                                         // NOSONAR
         for (Appointment apt : slots) {
-        	 System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));               // NOSONAR
+             System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));               // NOSONAR
         }
-
         System.out.println("\nUS1.2 - Administrator Logout");                                          // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                   // NOSONAR
         authService.logout();
         System.out.println("   Logout result: SUCCESS");                                        // NOSONAR
     }
-
     private void demoSprint2() {
         printDemoHeader("SPRINT 2: Booking & Business Rules");
-
         System.out.println("\nUS2.1 - Book Appointment");                                   // NOSONAR 
         System.out.println(SHORT_SEPARATOR);                                                // NOSONAR
         Appointment newApt = new Appointment(
@@ -755,7 +638,6 @@ public class Main {
         );
         boolean booked = appointmentService.book(newApt);
         System.out.println("   Booking result: " + (booked ? "CONFIRMED" : "REJECTED"));                                       // NOSONAR 
-
         System.out.println("\nUS2.2 - Duration Rule Enforcement");                             // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                    // NOSONAR
         System.out.println("   Max duration allowed: " + MAX_DURATION + MINUTES_SUFFIX);             // NOSONAR
@@ -767,7 +649,6 @@ public class Main {
         );
         boolean longResult = appointmentService.book(longApt);
         System.out.println("   Booking 200 min: " + (longResult ? "ACCEPTED" : "REJECTED (as expected)"));                       // NOSONAR
-
         System.out.println("\nUS2.3 - Participant Limit Enforcement");                                                  // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                                                   // NOSONAR
         System.out.println("   Max participants allowed: " + MAX_PARTICIPANTS);                                                       // NOSONAR
@@ -783,7 +664,6 @@ public class Main {
     
     private void demoSprint3() {
         printDemoHeader("SPRINT 3: Notifications & Mocking");
-
         System.out.println("\nUS3.1 - Send Appointment Reminders");                                            // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                              // NOSONAR
         System.out.println("   Demo Mode: Sending reminders is simulated...");                                                    // NOSONAR
@@ -791,10 +671,8 @@ public class Main {
         System.out.println("   Channels simulated: Console Logger, Email Service");                                                  // NOSONAR
     }
    
-
     private void demoSprint4() {
         printDemoHeader("SPRINT 4: Advanced Management Rules");
-
         System.out.println("\nUS4.1 - Modify Appointment");                                    // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                   // NOSONAR
         List<Appointment> appointments = repository.findAll();
@@ -809,40 +687,33 @@ public class Main {
             boolean modified = appointmentService.modifyAppointment(original, updated);
             System.out.println("   Modification result: " + (modified ? "SUCCESS" : "FAILED"));                // NOSONAR
         }
-
         System.out.println("\nUS4.2 - Admin Manage Reservations");                                    // NOSONAR 
         System.out.println(SHORT_SEPARATOR);                                                            // NOSONAR
         authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
         System.out.println("   Admin can modify/cancel ANY reservation");                                // NOSONAR
         System.out.println("   Admin privileges confirmed");                                              // NOSONAR
     }
-
     private void demoSprint5() {
         printDemoHeader("SPRINT 5: Appointment Types & Polymorphism");
-
         System.out.println("\nUS5.1 - Support Multiple Appointment Types");                                 // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                                 // NOSONAR
         System.out.println("   Available types:");                                                             // NOSONAR
         for (AppointmentType type : appointmentTypes) {
-        	System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName());                               // NOSONAR
+            System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName());                               // NOSONAR
         }
-
         System.out.println("\nUS5.2 - Apply Different Rules Per Type");                                            // NOSONAR
         System.out.println(SHORT_SEPARATOR);                                                                            // NOSONAR
         System.out.println("   Each type can have specific behavior:");                                                  // NOSONAR
         for (AppointmentType type : appointmentTypes) {
-        	 System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName() + ": " + type.getDescription());         // NOSONAR
+             System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName() + ": " + type.getDescription());         // NOSONAR
         }
     }
-
     //  HELPER METHODS 
-
     /**
      * Displays all user stories implemented in the system.
      */
     private void displayUserStories() {
         printHeader("IMPLEMENTED USER STORIES");
-
         String[][] stories = {
                 {"Sprint 1", "US1.1", "Administrator login"},
                 {"", "US1.2", "Administrator logout"},
@@ -856,38 +727,29 @@ public class Main {
                 {"Sprint 5", "US5.1", "Support multiple appointment types"},
                 {"", "US5.2", "Apply different rules per type"}
         };
-
         System.out.printf("%-12s %-8s %s%n", "SPRINT", "ID", "DESCRIPTION");                                   // NOSONAR
         System.out.println("--------------------------------------------------");                                    // NOSONAR
-
         for (String[] story : stories) {
             System.out.printf("%-12s %-8s %s%n", story[0], story[1], story[2]);                                        // NOSONAR
         }
     }
-
     /**
      * Views all appointments in the system.
      */
     private void viewAllAppointments() {
         printHeader("ALL APPOINTMENTS");
         List<Appointment> appointments = repository.findAll();
-
         if (appointments.isEmpty()) {
             System.out.println("No appointments found.");                                                    // NOSONAR
             return;
         }
-
-        for (Appointment apt : appointments) {
-            System.out.println("   " + formatAppointment(apt));                                       // NOSONAR
-        }
+        displayAppointmentList(appointments, ""); // Empty title
     }
-
     /**
      * Displays statistics about the system.
      */
     private void displayStatistics() {
         printHeader("SYSTEM STATISTICS");
-
         List<Appointment> all = repository.findAll();
         long confirmed = all.stream()
                 .filter(a -> a.getStatus() == AppointmentStatus.CONFIRMED)
@@ -898,13 +760,11 @@ public class Main {
         long cancelled = all.stream()
                 .filter(a -> a.getStatus() == AppointmentStatus.CANCELLED)
                 .count();
-
         System.out.println("   Total Appointments: " + all.size());                                              // NOSONAR
         System.out.println("   Confirmed: " + confirmed);                                                            // NOSONAR
         System.out.println("   Available: " + available);                                                                  // NOSONAR
         System.out.println("   Cancelled: " + cancelled);                                                     // NOSONAR
     }
-
     /**
      * Views current user's bookings.
      */
@@ -914,93 +774,78 @@ public class Main {
         List<Appointment> myAppointments = repository.findAll().stream()
             .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy()))
             .collect(Collectors.toList());
-
         if (myAppointments.isEmpty()) {
             System.out.println("You have no bookings yet.");                                                           // NOSONAR
             return;
         }
-
-        for (int i = 0; i < myAppointments.size(); i++) {
-        	System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(myAppointments.get(i)));        }                            // NOSONAR
+        displayAppointmentList(myAppointments, "");
     }
-
     /**
      * Gets future appointments only.
      */
-    private List<Appointment> getFutureAppointments() {
+    private List<Appointment> getFutureAppointments() {                                                                                                       // NOSONAR
         return repository.findAll().stream()
             .filter(apt -> apt.getDateTime().isAfter(LocalDateTime.now()))
             
             .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy())) 
             .collect(Collectors.toList());
     }
-
     /**
      * Displays a list of appointments.
      */
     private void displayAppointmentList(List<Appointment> appointments, String title) {
-        System.out.println("\n" + title + "\n");                                                                        // NOSONAR
+        if (!title.isEmpty()) {
+            System.out.println("\n" + title);                                                                        // NOSONAR
+        }
         for (int i = 0; i < appointments.size(); i++) {
-        	System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(appointments.get(i)));        }                   // NOSONAR
+            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(appointments.get(i)));        }                   // NOSONAR
     }
-
     /**
      * Prompts user to enter date and time.
      */
     private LocalDateTime enterDateTime() {
         System.out.println("\nEnter Appointment Date & Time:");                                     // NOSONAR
-
         System.out.print("   Year (e.g., 2025): ");                                                   // NOSONAR
         int year = readIntInput();
-
         System.out.print("   Month (1-12): ");                                                      // NOSONAR
         int month = readIntInput();
-
         System.out.print("   Day (1-31): ");                                                                 // NOSONAR
         int day = readIntInput();
-
         System.out.print("   Hour (0-23): ");                                                             // NOSONAR
         int hour = readIntInput();
-
         System.out.print("   Minute (0-59): ");                                                      // NOSONAR
         int minute = readIntInput();
-
         try {
             return LocalDateTime.of(year, month, day, hour, minute);
         } catch (Exception e) {
-        	logger.warning("Invalid date/time entered.");                                             
+            logger.warning("Invalid date/time entered.");                                             
             return null;
         }
     }
-
     /**
      * Prompts user to enter duration.
      */
     private int enterDuration() {
         System.out.print("\nEnter duration in minutes (max " + MAX_DURATION + "): ");                                  // NOSONAR
         int duration = readIntInput();
-
         if (duration <= 0 || duration > MAX_DURATION) {
             System.out.println("Duration must be between 1 and " + MAX_DURATION + " minutes.");                          // NOSONAR
             return -1;
         }
         return duration;
     }
-
     /**
      * Prompts user to enter number of participants.
      */
     private int enterParticipants() {
         System.out.print("Enter number of participants (max " + MAX_PARTICIPANTS + "): ");                                    // NOSONAR
         int participants = readIntInput();
-
         if (participants <= 0 || participants > MAX_PARTICIPANTS) {
             System.out.println("Participants must be between 1 and " + MAX_PARTICIPANTS + ".");                                    // NOSONAR
             return -1;
         }
         return participants;
     }
-
     /**
      * Formats an appointment for display.
      */
@@ -1012,7 +857,6 @@ public class Main {
                 apt.getType().getClass().getSimpleName(),
                 apt.getStatus());
     }
-
     /**
      * Formats an appointment briefly.
      */
@@ -1020,7 +864,6 @@ public class Main {
         return apt.getDateTime().format(DATE_FORMAT) + " - " +
                 apt.getType().getClass().getSimpleName();
     }
-
     /**
      * Reads integer input safely.
      */
@@ -1059,17 +902,14 @@ public class Main {
             System.out.println("║  " + (i + 1) + ". " + items.get(i).title);                 // NOSONAR
         }
     }
-
     //  UI HELPER METHODS 
-
     private void printWelcomeBanner() {
-    	 System.out.println(HORIZONTAL_SEPARATOR);                                                // NOSONAR
-    	    System.out.println("      APPOINTMENT SCHEDULING SYSTEM");                             // NOSONAR
-    	    logger.info("Welcome to the system");
-    	    System.out.println(HORIZONTAL_SEPARATOR);                                                 // NOSONAR
+         System.out.println(HORIZONTAL_SEPARATOR);                                                // NOSONAR
+            System.out.println("      APPOINTMENT SCHEDULING SYSTEM");                             // NOSONAR
+            logger.info("Welcome to the system");
+            System.out.println(HORIZONTAL_SEPARATOR);                                                 // NOSONAR
         
     }
-
     private void printHeader(String title) {
         System.out.println();                                                                                               // NOSONAR
         System.out.println(HORIZONTAL_SEPARATOR);                                                           // NOSONAR
@@ -1083,11 +923,9 @@ public class Main {
         System.out.println("  " + title);                                                                      // NOSONAR
         System.out.println(DASH_SEPARATOR);                                                                              // NOSONAR
     }
-
     private void printSeparator() {
-    	 System.out.println(DASH_SEPARATOR);                                                                    // NOSONAR
+         System.out.println(DASH_SEPARATOR);                                                                    // NOSONAR
     }
-
     private void printGoodbyeMessage() {
         System.out.println();                                                                                   // NOSONAR
         
@@ -1098,9 +936,7 @@ public class Main {
         System.out.println(EMPTY_LINE);                                                                                             // NOSONAR
       
     }
-
     //  MAIN ENTRY POINT 
-
     /**
      * Application entry point.
      *
