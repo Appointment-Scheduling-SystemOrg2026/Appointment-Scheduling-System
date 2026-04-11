@@ -538,7 +538,7 @@ public class Main {
             return;
         }
         
-        displayAppointmentList(allAppointments, "Select reservation to cancel:");
+        displayAppointmentList(allAppointments, "Select reservation to cancel:\n");
         
         System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);                                   // NOSONAR
         int index = readIntInput() - 1;
@@ -608,28 +608,30 @@ public class Main {
         System.out.print("\nPress ENTER to return to main menu...");                              // NOSONAR
         scanner.nextLine(); 
     }
+    
+    private void printDemoSectionHeader(String text) {
+        System.out.println("\n" + text); // NOSONAR
+        System.out.println(SHORT_SEPARATOR); // NOSONAR
+    }
+    
     private void demoSprint1() {
         printDemoHeader("SPRINT 1: Core Scheduling & Authentication");
-        System.out.println("\nUS1.1 - Administrator Login");                                       // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                    // NOSONAR
+        printDemoSectionHeader("US1.1 - Administrator Login");
         boolean loginSuccess = authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
         System.out.println("   Login result: " + (loginSuccess ? "SUCCESS" : "FAILED"));                       // NOSONAR
-        System.out.println("\nUS1.3 - View Available Slots");                                             // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                  // NOSONAR
+        printDemoSectionHeader("US1.3 - View Available Slots");
         List<Appointment> slots = appointmentService.viewAvailableSlots();
         System.out.println("   Available slots: " + slots.size());                                         // NOSONAR
         for (Appointment apt : slots) {
              System.out.println(LIST_ITEM_PREFIX + formatAppointmentShort(apt));               // NOSONAR
         }
-        System.out.println("\nUS1.2 - Administrator Logout");                                          // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                   // NOSONAR
+        printDemoSectionHeader("US1.2 - Administrator Logout");
         authService.logout();
         System.out.println("   Logout result: SUCCESS");                                        // NOSONAR
     }
     private void demoSprint2() {
         printDemoHeader("SPRINT 2: Booking & Business Rules");
-        System.out.println("\nUS2.1 - Book Appointment");                                   // NOSONAR 
-        System.out.println(SHORT_SEPARATOR);                                                // NOSONAR
+        printDemoSectionHeader("US2.1 - Book Appointment");
         Appointment newApt = new Appointment(
                 LocalDateTime.now().plusDays(3),
                 30,
@@ -638,8 +640,7 @@ public class Main {
         );
         boolean booked = appointmentService.book(newApt);
         System.out.println("   Booking result: " + (booked ? "CONFIRMED" : "REJECTED"));                                       // NOSONAR 
-        System.out.println("\nUS2.2 - Duration Rule Enforcement");                             // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                    // NOSONAR
+        printDemoSectionHeader("US2.2 - Duration Rule Enforcement");
         System.out.println("   Max duration allowed: " + MAX_DURATION + MINUTES_SUFFIX);             // NOSONAR
         Appointment longApt = new Appointment(
                 LocalDateTime.now().plusDays(1),
@@ -649,8 +650,7 @@ public class Main {
         );
         boolean longResult = appointmentService.book(longApt);
         System.out.println("   Booking 200 min: " + (longResult ? "ACCEPTED" : "REJECTED (as expected)"));                       // NOSONAR
-        System.out.println("\nUS2.3 - Participant Limit Enforcement");                                                  // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                                                   // NOSONAR
+        printDemoSectionHeader("US2.3 - Participant Limit Enforcement");
         System.out.println("   Max participants allowed: " + MAX_PARTICIPANTS);                                                       // NOSONAR
         Appointment crowdedApt = new Appointment(
                 LocalDateTime.now().plusDays(1),
@@ -664,8 +664,7 @@ public class Main {
     
     private void demoSprint3() {
         printDemoHeader("SPRINT 3: Notifications & Mocking");
-        System.out.println("\nUS3.1 - Send Appointment Reminders");                                            // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                              // NOSONAR
+        printDemoSectionHeader("US3.1 - Send Appointment Reminders");
         System.out.println("   Demo Mode: Sending reminders is simulated...");                                                    // NOSONAR
         System.out.println("   Reminder logic demonstrated without sending real emails.");                                                           // NOSONAR
         System.out.println("   Channels simulated: Console Logger, Email Service");                                                  // NOSONAR
@@ -673,8 +672,7 @@ public class Main {
    
     private void demoSprint4() {
         printDemoHeader("SPRINT 4: Advanced Management Rules");
-        System.out.println("\nUS4.1 - Modify Appointment");                                    // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                   // NOSONAR
+        printDemoSectionHeader("US4.1 - Modify Appointment");
         List<Appointment> appointments = repository.findAll();
         if (!appointments.isEmpty()) {
             Appointment original = appointments.get(0);
@@ -687,22 +685,19 @@ public class Main {
             boolean modified = appointmentService.modifyAppointment(original, updated);
             System.out.println("   Modification result: " + (modified ? "SUCCESS" : "FAILED"));                // NOSONAR
         }
-        System.out.println("\nUS4.2 - Admin Manage Reservations");                                    // NOSONAR 
-        System.out.println(SHORT_SEPARATOR);                                                            // NOSONAR
+        printDemoSectionHeader("US4.2 - Admin Manage Reservations");
         authService.login(admin, ADMIN_USERNAME, ADMIN_PASSWORD);
         System.out.println("   Admin can modify/cancel ANY reservation");                                // NOSONAR
         System.out.println("   Admin privileges confirmed");                                              // NOSONAR
     }
     private void demoSprint5() {
         printDemoHeader("SPRINT 5: Appointment Types & Polymorphism");
-        System.out.println("\nUS5.1 - Support Multiple Appointment Types");                                 // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                                 // NOSONAR
+        printDemoSectionHeader("US5.1 - Support Multiple Appointment Types");
         System.out.println("   Available types:");                                                             // NOSONAR
         for (AppointmentType type : appointmentTypes) {
             System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName());                               // NOSONAR
         }
-        System.out.println("\nUS5.2 - Apply Different Rules Per Type");                                            // NOSONAR
-        System.out.println(SHORT_SEPARATOR);                                                                            // NOSONAR
+        printDemoSectionHeader("US5.2 - Apply Different Rules Per Type");
         System.out.println("   Each type can have specific behavior:");                                                  // NOSONAR
         for (AppointmentType type : appointmentTypes) {
              System.out.println(LIST_ITEM_PREFIX + type.getClass().getSimpleName() + ": " + type.getDescription());         // NOSONAR
