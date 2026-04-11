@@ -80,20 +80,20 @@ class MainTest {
 
     @Test
     void testAdminLoginSuccess() throws Exception {
-        provideInput("admin\nadmin123\n6\n");
+        provideInput("admin\nadmin123\n7\n");
         mainApp = new Main();
         
         invokePrivateMethod("adminLoginFlow", null, null);
         
         String output = testOut.toString();
         assertTrue(output.contains("Login successful"));
-      //  assertTrue(output.contains("Logged out."));
+        assertTrue(output.contains("Logged out."));
     }
     
     @ParameterizedTest
     @CsvSource({
         "wrong\\nwrong\\n, adminLoginFlow, Invalid credentials",
-        "TestUser\\n4\\n1\\nn\\n6\\n, userModeFlow, No cancellable appointments found",
+        "TestUser\\n4\\n1\\nn\\n6\\n, userModeFlow, You have no bookings to cancel",
         "TestUser\\n3\\n99\\n6\\n, userModeFlow, No modifiable appointments found",
         "\\n\\n, runSystemDemo, DEMO COMPLETED SUCCESSFULLY"
     })
@@ -102,17 +102,18 @@ class MainTest {
         provideInput(processedInput);
         mainApp = new Main();
         invokePrivateMethod(methodName, null, null);
-       // assertTrue(testOut.toString().contains(expectedOutput));
+        assertTrue(testOut.toString().contains(expectedOutput));
     }
 
     @Test
     void testAdminFullCycle() throws Exception {
+        // تسلسل: Login -> Add Slot (1) -> Modify (4) -> Stats (6) -> Logout (7)
         String input = "admin\nadmin123\n" +
-                       "1\n" + 
-                       "3\n1\n2027\n05\n05\n10\n0\n30\n1\n1\n" +
-                       "4\n1\n" +
-                       "5\n" +
-                       "6\n";
+                       "1\n" + // Add Slot Menu
+                       "5\n2027\n05\n05\n10\n0\n30\n1\n" + // Type 5, Date, Dur, Part
+                       "4\n1\n2028\n06\n06\n11\n0\n30\n1\n5\n" + // Modify appt 1, New Data
+                       "6\n" + // Statistics
+                       "7\n"; // Logout
         
         provideInput(input);
         mainApp = new Main();
@@ -120,43 +121,39 @@ class MainTest {
         
         String output = testOut.toString();
         assertTrue(output.contains("Login successful"));
-      //  assertTrue(output.contains("ALL APPOINTMENTS"));
-      //  assertTrue(output.contains("Modified by Admin"));
-       // assertTrue(output.contains("Reservation cancelled by Admin"));
+        assertTrue(output.contains("Slot added successfully!"));
+        // تصحيح: البحث عن الرسالة الصحيحة الموجودة في Main.java
+        assertTrue(output.contains("Modified by Admin!")); 
     }
 
     @Test
     void testUserBookModifyCancelSuccess() throws Exception {
         String input = "TestUser\n" +
-                       "2\n" +
-                       "1\n" +
-                       "2027\n05\n10\n10\n0\n" +
-                       "30\n" + "1\n" +
-                       "y\n" +
-                       "3\n" +
-                       "1\n" +
-                       "2028\n06\n11\n11\n30\n" +
-                       "45\n" + "2\n" +
-                       "2\n" +
-                       "4\n" +
-                       "1\n" +
-                       "y\n" +
-                       "6\n";
+                       "2\n" + // Book Menu
+                       "1\n" + // Select Slot #1
+                       "y\n" + // Confirm
+                       "3\n" + // Modify Menu
+                       "1\n" + // Select My Booking #1
+                       "1\n" + // Select New Slot #1
+                       "4\n" + // Cancel Menu
+                       "1\n" + // Select My Booking #1
+                       "y\n" + // Confirm Cancel
+                       "6\n"; // Back
         
         provideInput(input);
         mainApp = new Main();
         invokePrivateMethod("userModeFlow", null, null);
         
         String output = testOut.toString();
-       // assertTrue(output.contains("Appointment booked successfully!"));
-       // assertTrue(output.contains("Appointment modified successfully!"));
-       // assertTrue(output.contains("Appointment cancelled successfully!"));
+        assertTrue(output.contains("Appointment booked successfully!"));
+        assertTrue(output.contains("Appointment modified successfully!"));
+        assertTrue(output.contains("Appointment cancelled successfully!"));
     }
 
     @Test
     void testUserCancelAbort() throws Exception {
         String input = "TestUser\n" +
-                       "2\n1\n2027\n05\n10\n10\n0\n30\n1\ny\n" +
+                       "2\n1\ny\n" +
                        "4\n1\nn\n" +
                        "6\n";
         
@@ -164,16 +161,13 @@ class MainTest {
         mainApp = new Main();
         invokePrivateMethod("userModeFlow", null, null);
         
-        //assertTrue(testOut.toString().contains("Cancellation aborted."));
+        assertTrue(testOut.toString().contains("Cancellation aborted."));
     }
 
     @Test
     void testUserModeSuccessAndBook() throws Exception {
         String input = "TestUser\n" +
                        "2\n" +
-                       "1\n" +
-                       "2027\n05\n10\n10\n0\n" +
-                       "30\n" +
                        "1\n" +
                        "y\n" +
                        "5\n" +
@@ -186,7 +180,7 @@ class MainTest {
         
         String output = testOut.toString();
         assertTrue(output.contains("Welcome, TestUser!"));
-        //assertTrue(output.contains("Appointment booked successfully!"));
+        assertTrue(output.contains("Appointment booked successfully!"));
         assertTrue(output.contains("MY BOOKINGS"));
     }
 
@@ -194,11 +188,7 @@ class MainTest {
     void testUserBookingRejectionAndCancel() throws Exception {
         String input = "TestUser\n" +
                        "2\n" +
-                       "1\n" +
-                       "2027\n05\n10\n10\n0\n" +
-                       "500\n" +
-                       "1\n" +
-                       "y\n" +
+                       "99\n" +
                        "6\n";
         
         provideInput(input);
@@ -206,8 +196,7 @@ class MainTest {
         invokePrivateMethod("userModeFlow", null, null);
         
         String output = testOut.toString();
-        assertFalse(output.contains("Appointment booked successfully!"));
-        assertTrue(output.contains("USER MENU"));
+        assertTrue(output.contains("Invalid selection"));
     }
     
     @Test
@@ -215,8 +204,6 @@ class MainTest {
         String input = "TestUser\n" +
                        "2\n" +
                        "1\n" +
-                       "2027\n05\n10\n10\n0\n" +
-                       "30\n" + "1\n" +
                        "n\n" +
                        "6\n";
         
