@@ -293,6 +293,7 @@ public class Main {
         inAdminMenu = true;
 
         runMenu(ADMIN_DASHBOARD_TITLE, List.of(
+        	new MenuItem("Add New Available Slot", this::adminAddSlot),
             new MenuItem("View All Appointments", this::viewAllAppointments),
             new MenuItem("Send Reminders", this::sendAllReminders),
             new MenuItem("Modify Reservation", this::adminModifyReservation),
@@ -374,57 +375,46 @@ public class Main {
      */
     private void bookAppointmentFlow() {
         printHeader("BOOK NEW APPOINTMENT (US2.1)");
-
-        // Step 1: Select Appointment Type 
-        AppointmentType selectedType = selectAppointmentType();
-        if (selectedType == null) return;
-
-        // Step 2: Enter Date and Time
-        LocalDateTime dateTime = enterDateTime();
-        if (dateTime == null) return;
-
-        // Step 3: Enter Duration 
-        int duration = enterDuration();
-        if (duration <= 0) return;
-
-        // Step 4: Enter Participants 
-        int participants = enterParticipants();
-        if (participants <= 0) return;
-
-        // Step 5: Create and Book
-        Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
-
-        System.out.println("\nBooking Summary:");                                                                        // NOSONAR
-        System.out.println("   Type: " + selectedType.getClass().getSimpleName());                                         // NOSONAR
-        System.out.println("   Date: " + dateTime.format(DATE_FORMAT));                                                        // NOSONAR
-        System.out.println("   Duration: " + duration + MINUTES_SUFFIX);                                                            // NOSONAR
-        System.out.println("   Participants: " + participants);                                                                        // NOSONAR
-        System.out.print("\nConfirm booking? (y/n): ");                                                                             // NOSONAR
+        
+        List<Appointment> availableSlots = appointmentService.viewAvailableSlots().stream()
+                .filter(apt -> apt.getStatus() == AppointmentStatus.AVAILABLE) 
+                .collect(Collectors.toList());
+                
+        if (availableSlots.isEmpty()) {
+            System.out.println("No available slots at the moment."); // NOSONAR
+            return;
+        }
+        
+        System.out.println("Found " + availableSlots.size() + " available slot(s):\n"); // NOSONAR
+        for (int i = 0; i < availableSlots.size(); i++) {
+            Appointment apt = availableSlots.get(i);
+            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(apt)); // NOSONAR
+        }
+        
+        System.out.print("\nSelect slot number to book: "); // NOSONAR
+        int index = readIntInput() - 1;
+        
+        if (index < 0 || index >= availableSlots.size()) {
+            System.out.println(INVALID_SELECTION_MSG); // NOSONAR
+            return;
+        }
+        
+        Appointment toBook = availableSlots.get(index);
+        
+        System.out.print("Confirm booking this slot? (y/n): "); // NOSONAR
         String confirm = safeReadLine().trim().toLowerCase();
-
+        
         if (confirm.equals("y") || confirm.equals("yes")) {
-            boolean success = appointmentService.book(appointment);
-
-            if (success) {
-            	appointment.setBookedBy(currentUser.getUsername());                                                  // NOSONAR
-            	System.out.print("✅ Appointment booked successfully!");                                                                    // NOSONAR
-            	logger.info(() -> "   Status: " + appointment.getStatus());
-
-                // Send confirmation notification
-                if (currentUser != null) {                                                                                  // NOSONAR
-                	 notificationManager.sendReminderToEmail(PROJECT_EMAIL, appointment);
-                }
-            } else {
-            	logger.warning("❌ Booking rejected! Please check the rules:");
-            	logger.info("   - Maximum duration: " + MAX_DURATION + MINUTES_SUFFIX);
-
-            	logger.info("   - Maximum participants: " + MAX_PARTICIPANTS);
-            }
+            toBook.setStatus(AppointmentStatus.CONFIRMED);
+            toBook.setBookedBy(currentUser.getUsername());
+            
+            System.out.println("✅ Appointment booked successfully!"); // NOSONAR
+            
+            notificationManager.sendReminderToEmail(PROJECT_EMAIL, toBook);
         } else {
-        	logger.info("Booking cancelled.");
+            System.out.println("Booking cancelled."); // NOSONAR
         }
     }
-
     // SPRINT 5: APPOINTMENT TYPES 
 
     /**
@@ -464,50 +454,85 @@ public class Main {
      */
     private void modifyAppointmentFlow() {
         printHeader("MODIFY APPOINTMENT (US4.1)");
+        
+        List<Appointment> myAppointments = repository.findAll().stream()
+            .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy()))
+            .collect(Collectors.toList());
 
-        List<Appointment> appointments = getFutureAppointments();
-
-        if (appointments.isEmpty()) {
-            System.out.println("No modifiable appointments found.");                                                    // NOSONAR
-            System.out.println("Note: Only future appointments can be modified.");                                        // NOSONAR
+        if (myAppointments.isEmpty()) {
+            System.out.println("No modifiable appointments found."); // NOSONAR
             return;
         }
-
-        displayAppointmentList(appointments, "Select appointment to modify:");
-
-        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);                                                                // NOSONAR
+        
+        displayAppointmentList(myAppointments, "Select appointment to modify:");
+        
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT); // NOSONAR
         int index = readIntInput() - 1;
-
-        if (index < 0 || index >= appointments.size()) {
-        	logger.warning(INVALID_SELECTION_MSG);
+        
+        if (index < 0 || index >= myAppointments.size()) {
+            System.out.println(INVALID_SELECTION_MSG); // NOSONAR
             return;
         }
+        
+        Appointment toModify = myAppointments.get(index);
+        
+        List<Appointment> availableSlots = appointmentService.viewAvailableSlots().stream()
+            .filter(apt -> apt.getStatus() == AppointmentStatus.AVAILABLE)
+            .collect(Collectors.toList());
+            
+        availableSlots.remove(toModify); 
 
-        Appointment original = appointments.get(index);
-
-        System.out.println("\nCurrent appointment:");                                            // NOSONAR
-        System.out.println("   " + formatAppointment(original));                                  // NOSONAR
- 
-        // Get new values
-        LocalDateTime newDateTime = enterDateTime();
-        int newDuration = enterDuration();
-        int newParticipants = enterParticipants();
-        AppointmentType newType = selectAppointmentType();
-
-        if (newDateTime == null || newDuration <= 0 || newParticipants <= 0 || newType == null) {
-            System.out.println("Modification cancelled due to invalid input.");                             // NOSONAR
+        if (availableSlots.isEmpty()) {
+            System.out.println("No other available slots to move to."); // NOSONAR
             return;
         }
-
-        Appointment updated = new Appointment(newDateTime, newDuration, newParticipants, newType);
-
-        boolean success = appointmentService.modifyAppointment(original, updated);
-
-        if (success) {
-            System.out.println("✅ Appointment modified successfully!");                                        // NOSONAR
-        } else {
-            System.out.println("Modification failed. Please check your inputs.");                                // NOSONAR
+        
+        System.out.println("\nSelect a new slot from the available list:"); // NOSONAR
+        for (int i = 0; i < availableSlots.size(); i++) {
+            System.out.printf(LIST_ITEM_FORMAT, i + 1, formatAppointment(availableSlots.get(i))); // NOSONAR
         }
+        
+        System.out.print("\nSelect new slot number: "); // NOSONAR
+        int newIndex = readIntInput() - 1;
+        
+        if (newIndex < 0 || newIndex >= availableSlots.size()) {
+            System.out.println(INVALID_SELECTION_MSG); // NOSONAR
+            return;
+        }
+        
+        Appointment newSlot = availableSlots.get(newIndex);
+        
+        toModify.setStatus(AppointmentStatus.AVAILABLE); 
+        toModify.setBookedBy(null);
+        
+        newSlot.setStatus(AppointmentStatus.CONFIRMED); 
+        newSlot.setBookedBy(currentUser.getUsername());
+        
+        System.out.println("✅ Appointment modified successfully!"); // NOSONAR
+    }
+    /**
+     * Admin adds a new available slot to the system.
+     */
+    private void adminAddSlot() {
+        printHeader("ADD NEW AVAILABLE SLOT");
+        
+        AppointmentType selectedType = selectAppointmentType();
+        if (selectedType == null) return;
+
+        LocalDateTime dateTime = enterDateTime();
+        if (dateTime == null) return;
+
+        int duration = enterDuration();
+        if (duration <= 0) return;
+
+        int participants = enterParticipants();
+        if (participants <= 0) return;
+
+        Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
+        appointment.setStatus(AppointmentStatus.AVAILABLE); 
+        
+        repository.save(appointment);
+        System.out.println("✅ Slot added successfully!"); // NOSONAR
     }
 
     /**
@@ -515,43 +540,41 @@ public class Main {
      */
     private void cancelAppointmentFlow() {
         printHeader("CANCEL APPOINTMENT (US4.1)");
-
-        List<Appointment> appointments = getFutureAppointments();
-
-        if (appointments.isEmpty()) {
-            System.out.println("No cancellable appointments found.");                                                      // NOSONAR                                                   
+        
+        List<Appointment> myAppointments = repository.findAll().stream()
+            .filter(apt -> currentUser.getUsername().equals(apt.getBookedBy()))
+            .collect(Collectors.toList());
+            
+        if (myAppointments.isEmpty()) {
+            System.out.println("You have no bookings to cancel."); // NOSONAR
             return;
         }
-
-        displayAppointmentList(appointments, "Select appointment to cancel:");
-
-        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);                                   // NOSONAR
+        
+        displayAppointmentList(myAppointments, "Select appointment to cancel:");
+        
+        System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT); // NOSONAR
         int index = readIntInput() - 1;
-
-        if (index < 0 || index >= appointments.size()) {
-        	logger.warning(INVALID_SELECTION_MSG);
+        
+        if (index < 0 || index >= myAppointments.size()) {
+            System.out.println(INVALID_SELECTION_MSG); // NOSONAR
             return;
         }
-
-        Appointment toCancel = appointments.get(index);
-
-        System.out.println("\nYou are about to cancel:");                                          // NOSONAR
-        System.out.println("   " + formatAppointment(toCancel));                                     // NOSONAR
-
-        System.out.print("\nConfirm cancellation? (y/n): ");                                          // NOSONAR
-        String confirm = scanner.nextLine().trim().toLowerCase();
-
+        
+        Appointment toCancel = myAppointments.get(index);
+        System.out.println("\nYou are about to cancel:"); // NOSONAR
+        System.out.println("   " + formatAppointment(toCancel)); // NOSONAR
+        
+        System.out.print("\nConfirm cancellation? (y/n): "); // NOSONAR
+        String confirm = safeReadLine().trim().toLowerCase();
+        
         if (confirm.equals("y") || confirm.equals("yes")) {
-            boolean success = appointmentService.cancelAppointment(toCancel);
-
-            if (success) {
-                System.out.println("✅ Appointment cancelled successfully!");                                   // NOSONAR
-                System.out.println("   The slot is now available for booking.");                                   // NOSONAR
-            } else {
-                System.out.println("Cancellation failed.");                                                       // NOSONAR
-            }
+            toCancel.setStatus(AppointmentStatus.AVAILABLE);
+            toCancel.setBookedBy(null); 
+            
+            System.out.println("✅ Appointment cancelled successfully!"); // NOSONAR
+            System.out.println("   The slot is now available for booking."); // NOSONAR
         } else {
-            System.out.println("Cancellation aborted.");                                                         // NOSONAR
+            System.out.println("Cancellation aborted."); // NOSONAR
         }
     }
 
@@ -596,36 +619,41 @@ public class Main {
      * Admin cancels any reservation (US4.2).
      */
     private void adminCancelReservation() {
-    	System.out.println();                                                                             // NOSONAR
-    	System.out.println(HORIZONTAL_SEPARATOR);                                                        // NOSONAR
-    	System.out.println("  ADMIN: CANCEL RESERVATION");                                              // NOSONAR
-    	System.out.println(HORIZONTAL_SEPARATOR);                                                      // NOSONAR
-
+        System.out.println();                                                                             // NOSONAR
+        System.out.println(HORIZONTAL_SEPARATOR);                                                        // NOSONAR
+        System.out.println("  ADMIN: CANCEL RESERVATION");                                              // NOSONAR
+        System.out.println(HORIZONTAL_SEPARATOR);                                                      // NOSONAR
+        
         List<Appointment> allAppointments = repository.findAll();
-
+        
         if (allAppointments.isEmpty()) {
             System.out.println("No appointments in the system.");                                      // NOSONAR
             return;
         }
-
         System.out.println("\nSelect reservation to cancel:\n");                                          // NOSONAR
         for (int i = 0; i < allAppointments.size(); i++) {
             Appointment apt = allAppointments.get(i);
             System.out.println("  [" + (i + 1) + "] " + formatAppointment(apt));                    // NOSONAR
         } 
-
         System.out.print(ENTER_APPOINTMENT_NUMBER_PROMPT);                                   // NOSONAR
         int index = readIntInput() - 1;
-
+        
         if (index >= 0 && index < allAppointments.size()) {
             Appointment toCancel = allAppointments.get(index);
             
+            if (toCancel.getStatus() == AppointmentStatus.CONFIRMED) {
+                toCancel.setStatus(AppointmentStatus.AVAILABLE);
+                toCancel.setBookedBy(null);
+                System.out.println(">> Booking cancelled. Slot is now Available again.");                         // NOSONAR
+            } else if (toCancel.getStatus() == AppointmentStatus.AVAILABLE) {
+                toCancel.cancel(); 
+                System.out.println(">> Slot cancelled successfully.");                                         // NOSONAR
+            } else {
+                System.out.println(">> Appointment is already cancelled.");                            // NOSONAR
+            }
             
-            toCancel.cancel();
-            
-            System.out.println(">> Reservation cancelled by Admin.");                                 // NOSONAR
         } else {
-        	System.out.println(INVALID_SELECTION_MSG);                                             // NOSONAR
+            System.out.println(INVALID_SELECTION_MSG);                                             // NOSONAR
         }
     }
 
