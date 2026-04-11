@@ -149,7 +149,7 @@ public class Main {
      // Initialize Observer Pattern for notifications
         NotificationService consoleService = new NotificationService();
         EmailNotificationService emailService = new EmailNotificationService();
-        emailService.enableRealEmail(PROJECT_EMAIL, "jgwgymubwqmxxylu");
+        //emailService.enableRealEmail(PROJECT_EMAIL, "jgwgymubwqmxxylu");
         List<Observer> notificationObservers = Arrays.asList(consoleService, emailService);
         notificationManager = new NotificationManager(notificationObservers);
         // Initialize Authentication
