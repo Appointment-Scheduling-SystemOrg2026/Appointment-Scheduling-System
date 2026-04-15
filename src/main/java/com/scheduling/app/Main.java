@@ -120,11 +120,21 @@ public class Main {
         }
     }
     //  CONSTRUCTOR 
+    
     /**
-     * Constructs the Main application and initializes all system components.
+     * Default constructor used by Tests.
+     * Disables real email sending.
      */
     public Main() {
-        initializeSystem();
+        this(false);
+    }
+
+    /**
+     * Constructor used by Main application.
+     * @param enableRealEmail true to send real emails, false otherwise.
+     */
+    public Main(boolean enableRealEmail) {
+        initializeSystem(enableRealEmail);
         initializeAppointmentTypes();
         authService = new AuthenticationService();
         admin = new Administrator(ADMIN_USERNAME, ADMIN_PASSWORD);
@@ -133,7 +143,7 @@ public class Main {
     /**
      * Initializes all system layers and dependencies.
      */
-    private void initializeSystem() {
+    private void initializeSystem(boolean enableRealEmail) {
          logger.info(HORIZONTAL_SEPARATOR);
         printHeader("                         Welcome                   ");
         logger.info(HORIZONTAL_SEPARATOR);
@@ -149,6 +159,12 @@ public class Main {
      // Initialize Observer Pattern for notifications
         NotificationService consoleService = new NotificationService();
         EmailNotificationService emailService = new EmailNotificationService();
+        
+        // CONDITIONAL EMAIL SENDING
+        if (enableRealEmail) {
+            emailService.enableRealEmail(PROJECT_EMAIL, "jgwgymubwqmxxylu");
+        }
+
         List<Observer> notificationObservers = Arrays.asList(consoleService, emailService);
         notificationManager = new NotificationManager(notificationObservers);
         // Initialize Authentication
@@ -443,12 +459,18 @@ public class Main {
         
         AppointmentType selectedType = selectAppointmentType();
         if (selectedType == null) return;
+
         LocalDateTime dateTime = enterDateTime();
         if (dateTime == null) return;
-        int duration = enterDuration();
+
+        // UPDATED: Use type-specific limits
+        int duration = enterDuration(selectedType.getMaxDuration());
         if (duration <= 0) return;
-        int participants = enterParticipants();
+
+        // UPDATED: Use type-specific limits
+        int participants = enterParticipants(selectedType.getMaxParticipants());
         if (participants <= 0) return;
+
         Appointment appointment = new Appointment(dateTime, duration, participants, selectedType);
         appointment.setStatus(AppointmentStatus.AVAILABLE); 
         
@@ -817,25 +839,40 @@ public class Main {
         }
     }
     /**
-     * Prompts user to enter duration.
+     * Prompts user to enter duration (uses system default max).
      */
     private int enterDuration() {
-        System.out.print("\nEnter duration in minutes (max " + MAX_DURATION + "): ");                                  // NOSONAR
+        return enterDuration(MAX_DURATION);
+    }
+    /**
+     * Prompts user to enter duration with specific max limit.
+     * This is used when adding a new slot based on type rules.
+     */
+    private int enterDuration(int max) {
+        System.out.print("\nEnter duration in minutes (max " + max + "): ");                                  // NOSONAR
         int duration = readIntInput();
-        if (duration <= 0 || duration > MAX_DURATION) {
-            System.out.println("Duration must be between 1 and " + MAX_DURATION + " minutes.");                          // NOSONAR
+        if (duration <= 0 || duration > max) {
+            System.out.println("Duration must be between 1 and " + max + " minutes.");                          // NOSONAR
             return -1;
         }
         return duration;
     }
     /**
-     * Prompts user to enter number of participants.
+     * Prompts user to enter number of participants (uses system default max).
      */
     private int enterParticipants() {
-        System.out.print("Enter number of participants (max " + MAX_PARTICIPANTS + "): ");                                    // NOSONAR
+        return enterParticipants(MAX_PARTICIPANTS);
+    }
+
+    /**
+     * Prompts user to enter number of participants with specific max limit.
+     * This is used when adding a new slot based on type rules.
+     */
+    private int enterParticipants(int max) {
+        System.out.print("Enter number of participants (max " + max + "): ");                                    // NOSONAR
         int participants = readIntInput();
-        if (participants <= 0 || participants > MAX_PARTICIPANTS) {
-            System.out.println("Participants must be between 1 and " + MAX_PARTICIPANTS + ".");                                    // NOSONAR
+        if (participants <= 0 || participants > max) {
+            System.out.println("Participants must be between 1 and " + max + ".");                                    // NOSONAR
             return -1;
         }
         return participants;
@@ -937,7 +974,7 @@ public class Main {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        Main app = new Main();
+        Main app = new Main(true);
         app.start();
     }
 }
